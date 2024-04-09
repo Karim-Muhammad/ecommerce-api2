@@ -7,8 +7,8 @@ const CategorySchema = new mongoose.Schema(
       type: String,
       required: [true, "Category {PATH} required"],
       unique: [true, "Category {PATH} must be unique"],
-      minlength: [3, "Too short category {PATH}"],
-      maxlength: [32, "Too long category {PATH}"],
+      minlength: [3, "Too short category {PATH}, min is {VALUE}"],
+      maxlength: [32, "Too long category {PATH}, max is {VALUE}"],
     },
     // // Custom Validator
     // validate: {
@@ -19,8 +19,8 @@ const CategorySchema = new mongoose.Schema(
     // },
     description: {
       type: String,
-      minLength: [10, "{PATH} must be at least 10 characters long"],
-      maxLength: [100, "{PATH} must be at most 100 characters long"],
+      minLength: [10, "{PATH} must be at least {VALUE} characters long"],
+      maxLength: [100, "{PATH} must be at most {VALUE} characters long"],
       required: false, // Optional
     },
     status: {

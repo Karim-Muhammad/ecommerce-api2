@@ -7,18 +7,23 @@ const globalErrorHandler = (err, req, res, next) => {
 };
 
 const developmentErrorHandler = (err, req, res, next) => {
+  // console.log(err);
   res.status(err.statusCode).json({
-    status: err.statusCode,
-    message: err.message,
-    stack: err.stack,
-    isOperational: err.isOperational,
+    error: {
+      ...err,
+      stack: err.stack,
+      message: err.message,
+      isOperational: err.isOperational,
+    },
   });
 };
 
 const productionErrorHandler = (err, req, res, next) => {
   res.status(err.statusCode).json({
-    status: err.statusCode,
-    message: err.message,
+    error: {
+      status: err.statusCode,
+      message: err.message,
+    },
   });
 };
 

@@ -5,6 +5,7 @@ require("dotenv").config();
 
 // Configuration file
 const config = require("./config");
+// load env variables `node v21.0.0` or higher by using loadEnv function in core node module
 
 // Set up Database
 const setupConnection = require("./src/utils/setup-connection-db");
@@ -14,6 +15,9 @@ setupConnection();
 
 // Express app
 const app = express();
+
+// Configurations
+// app.use("json spaces", 2);
 
 // Parse Body of JSON request
 app.use(express.json());
@@ -29,10 +33,31 @@ app.all("*", (req, res, next) => {
   // next(ApiError.notFound("Page Not Found!"));
 });
 
-// Global Error Handler
+// 0) Global Error Handler (Express)
 app.use(globalErrorHandler);
 
 // Server Listening to port
-app.listen(config.port, () => {
+const server = app.listen(config.port, () => {
   console.log("App is running on port 8000");
+});
+
+// 1) Unhandled Rejection
+// This is for handling unhandled promise rejection
+
+process.on("unhandledRejection", (err) => {
+  console.error("Uncaught Rejection! Shutting down...");
+  console.error(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+// 2) Uncaught Exception
+// This is for handling uncaught exception
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception! Shutting down...");
+  console.error(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
 });

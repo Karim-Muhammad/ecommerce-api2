@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { validationResult } = require("express-validator");
 
 const {
   createCategory,
@@ -9,14 +10,20 @@ const {
   deleteCategory,
 } = require("../controllers/CategoryController");
 
-router.route("/").get(getCategories).post(createCategory);
+const {
+  getCategoryRule,
+  createCategoryRule,
+  updateCategoryRule,
+  deleteCategoryRule,
+} = require("../rules/category");
+
+router.route("/").get(getCategories).post(createCategoryRule, createCategory);
 
 router
   .route("/:id")
-  .get(getCategory)
-  .patch(updateCategory)
-  .delete(deleteCategory);
-
+  .get(getCategoryRule, getCategory)
+  .patch(updateCategoryRule, updateCategory)
+  .delete(deleteCategoryRule, deleteCategory);
 // router.use((err, req, res, next) => {});
 
 module.exports = router;

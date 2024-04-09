@@ -10,7 +10,7 @@ CategorySchema.pre("save", function (next) {
 // findOneAndUpdate !== findByIdAndUpdate
 CategorySchema.post(
   "findOneAndUpdate",
-  { document: true, query: true },
+  { document: true, query: true }, // read more [here](https://mongoosejs.com/docs/middleware.html#types-of-middleware)
   function (doc, next) {
     console.log("Pre Middleware");
     // console.log("QUERY ", this);

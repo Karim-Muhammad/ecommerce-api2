@@ -17,7 +17,7 @@ exports.createCategory = asyncHandler(async (req, res, next) => {
     await newCategory.save();
     res.status(201).json(newCategory);
   } catch (error) {
-    next(new ApiError(400, error.message, error.stack).toJson());
+    next(new ApiError(400, error).toJson());
   }
   // still (asyncHandler) cannot handling error which is inside timers
 });
@@ -45,10 +45,13 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
  */
 exports.getCategory = asyncHandler(async (req, res, next) => {
   const category = await Category.findById(req.params.id);
+
   // if findById doesn't exist it will return `null`
+
   if (!category) {
     return next(ApiError.notFound("Category not found!"));
   }
+
   res.status(200).json(category);
 });
 
@@ -87,6 +90,8 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
     res.status(200).json(category);
   } catch (err) {
     // 3) if there is an errors occured in update (like duplication keys)
+    // objectid not valid format
+    // or any other errors
     next(ApiError.inServer("something went wrong in updating category!"));
   }
 });
