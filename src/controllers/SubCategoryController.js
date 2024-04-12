@@ -11,6 +11,8 @@ const catchAsync = require("../utils/catchAsync"); // created by me
 exports.createSubCategory = catchAsync(async (req, res, next) => {
   const { name, categoryId } = req.body;
 
+  // nested route
+
   const newSubCategory = await SubCategory.create({
     name,
     category: categoryId,
@@ -27,8 +29,30 @@ exports.createSubCategory = catchAsync(async (req, res, next) => {
  * @access Public
  */
 exports.getAllSubCategories = async (req, res, next) => {
-  const categories = await SubCategory.find({});
+  const paginate = {
+    limit: +req.query.limit || 2,
+    page: +req.query.page || 1,
+    get skip() {
+      return (this.page - 1) * this.limit;
+    },
+  };
+
+  // to get all sub-categories of a specific category
+  // otherwise, it will return all sub-categories
+  const filter = {};
+  if (req.params.categoryId) filter.category = req.params.categoryId;
+
+  const categories = await SubCategory.find(filter)
+    .skip(paginate.skip)
+    .limit(paginate.limit)
+    .populate({
+      path: "category",
+      select: "name -_id", // to exclude _id from the result
+    });
+
   res.status(200).json({
+    page: paginate.page,
+    length: categories.length,
     data: categories,
   });
 };
@@ -42,6 +66,10 @@ exports.getSubCategory = async (req, res, next) => {
   const { id } = req.params;
 
   const category = await SubCategory.findById(id);
+  // .populate({
+  //   path: "category",
+  //   select: "name -_id",
+  // }); you don't need it here, it consume unnecessary more data
 
   if (!category) {
     return next(ApiError.notFound("SubCategory not Found!"));
@@ -83,7 +111,6 @@ exports.updateSubCategory = catchAsync(async (req, res, next) => {
  * @route DELETE /api/v1/sub-categories/:id
  * @access Private/Admin
  */
-
 exports.deleteSubCategory = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 

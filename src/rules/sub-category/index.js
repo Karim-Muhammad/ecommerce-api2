@@ -7,8 +7,10 @@ const Category = require("../../models/Category");
 const ApiError = require("../../utils/ApiError");
 
 const { doValidate } = require("../../validators");
+const catchAsync = require("../../utils/catchAsync");
+const SubCategoryModel = require("../../models/SubCategory");
 
-exports.createSubCategoryRule = [
+exports.checkBodyDataRule = [
   body("name").notEmpty().withMessage("name is required!"),
   body("name")
     .isLength({ min: 2 })
@@ -43,12 +45,12 @@ exports.createSubCategoryRule = [
   doValidate,
 ];
 
-exports.getSingleSubCategoryRule = [
+exports.ensureIdMongoId = [
   param("id").isMongoId().withMessage("id must be a valid MongoId"),
   doValidate,
 ];
 
-exports.updateSingleSubCategoryRule = [
+exports.checkBodyDataInUpdateRule = [
   body("name")
     // .optional({ values: ["", undefined] }) // but if it's not empty, it should be validated
     // .if((value) => !!value) // if true, process the following validation
@@ -69,3 +71,26 @@ exports.updateSingleSubCategoryRule = [
 
   doValidate,
 ];
+
+// this middleware is used to set categoryId to body in Nested Route (category/:id/SubCategory)
+exports.setCategoryIdToBody = (req, res, next) => {
+  if (req.params.categoryId) {
+    req.body.categoryId = req.params.categoryId;
+  }
+
+  next();
+};
+
+exports.ensureIdRelatedToCategory = catchAsync(async (req, res, next) => {
+  const category = await SubCategoryModel.findById(req.params.id);
+
+  if (!category) {
+    return next(ApiError.notFound("SubCategory not Found!"));
+  }
+
+  if (category.category.toString() !== req.params.categoryId) {
+    throw new ApiError(400, "SubCategory is not related to the category");
+  }
+
+  next();
+});

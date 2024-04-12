@@ -2,8 +2,6 @@ const express = require("express");
 
 const router = express.Router();
 
-const { validationResult } = require("express-validator");
-
 const {
   createCategory,
   getCategories,
@@ -26,6 +24,7 @@ router
   .get(getCategoryRule, getCategory)
   .patch(getCategoryRule, updateCategoryRule, updateCategory)
   .delete(getCategoryRule, deleteCategoryRule, deleteCategory);
-// router.use((err, req, res, next) => {});
 
+router.use("/:categoryId/subcategories", require("./sub-category"));
+// router.use("/:id/products", require("./product"));
 module.exports = router;

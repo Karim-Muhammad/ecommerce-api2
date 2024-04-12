@@ -9,26 +9,31 @@ const {
 } = require("../controllers/SubCategoryController");
 
 const {
-  createSubCategoryRule,
-  getSingleSubCategoryRule,
-  updateSingleSubCategoryRule,
+  checkBodyDataRule,
+  ensureIdMongoId,
+  checkBodyDataInUpdateRule,
+  setCategoryIdToBody,
+  ensureIdRelatedToCategory,
 } = require("../rules/sub-category");
 
-const router = express.Router();
+// handler can only access parameters of route related to
+// but cannot access parameters which outside of the route - [Learn more about mergeParams](https://expressjs.com/en/api.html#express.router)
+const router = express.Router({ mergeParams: true });
 
 router
   .route("/")
   .get(getAllSubCategories)
-  .post(createSubCategoryRule, createSubCategory);
+  .post(setCategoryIdToBody, checkBodyDataRule, createSubCategory);
 
 router
   .route("/:id")
-  .get(getSingleSubCategoryRule, getSubCategory)
+  .all(ensureIdMongoId, ensureIdRelatedToCategory) // check if the id is related to the category
+  .get(getSubCategory)
   .patch(
-    getSingleSubCategoryRule,
-    updateSingleSubCategoryRule,
+    setCategoryIdToBody, // set categoryId to body if it's available in params (nested route)
+    checkBodyDataInUpdateRule,
     updateSubCategory
   )
-  .delete(getSingleSubCategoryRule, deleteSubCategory);
+  .delete(deleteSubCategory);
 
 module.exports = router;
