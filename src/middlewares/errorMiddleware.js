@@ -1,11 +1,3 @@
-const globalErrorHandler = (err, req, res, next) => {
-  if (process.env.NODE_ENV === "development") {
-    developmentErrorHandler(err, req, res, next);
-  } else {
-    productionErrorHandler(err, req, res, next);
-  }
-};
-
 const developmentErrorHandler = (err, req, res, next) => {
   // console.log(err);
   res.status(err.statusCode).json({
@@ -25,6 +17,14 @@ const productionErrorHandler = (err, req, res, next) => {
       message: err.message,
     },
   });
+};
+
+const globalErrorHandler = (err, req, res, next) => {
+  if (process.env.NODE_ENV === "development") {
+    developmentErrorHandler(err, req, res, next);
+  } else {
+    productionErrorHandler(err, req, res, next);
+  }
 };
 
 module.exports = globalErrorHandler;

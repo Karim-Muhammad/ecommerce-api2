@@ -6,7 +6,8 @@ const CategorySchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, "Category {PATH} required"],
-      unique: [true, "Category {PATH} must be unique"],
+      // unique: [true, "Category {PATH} must be unique"],
+      unique: true,
       minlength: [3, "Too short category {PATH}, min is {VALUE}"],
       maxlength: [32, "Too long category {PATH}, max is {VALUE}"],
     },

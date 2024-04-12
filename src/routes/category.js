@@ -1,5 +1,7 @@
 const express = require("express");
+
 const router = express.Router();
+
 const { validationResult } = require("express-validator");
 
 const {
@@ -22,8 +24,8 @@ router.route("/").get(getCategories).post(createCategoryRule, createCategory);
 router
   .route("/:id")
   .get(getCategoryRule, getCategory)
-  .patch(updateCategoryRule, updateCategory)
-  .delete(deleteCategoryRule, deleteCategory);
+  .patch(getCategoryRule, updateCategoryRule, updateCategory)
+  .delete(getCategoryRule, deleteCategoryRule, deleteCategory);
 // router.use((err, req, res, next) => {});
 
 module.exports = router;

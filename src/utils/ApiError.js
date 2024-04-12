@@ -1,3 +1,15 @@
+function getMessages(error) {
+  if (Array.isArray(error)) {
+    return error.reduce(
+      (res, err) =>
+        `${res + (err.msg ?? err.message ?? "an error occured!")}\n`,
+      ""
+    );
+  }
+
+  return error.msg || error.message || "An error occurred!";
+}
+
 /**
  * @class ApiError
  * @description Custom error class to handle API errors (operational errors - errors that are expected)
@@ -8,11 +20,24 @@
  */
 class ApiError extends Error {
   constructor(statusCode, error, isOperational = true) {
-    console.log("ERROR: ", error);
-    super(error?.message || error?.msg || "An error occurred!");
+    // --------------------------
+    // console.log("ERROR: ", error);
+
+    // --------------------------
+    super(
+      error?.message ||
+        error?.msg ||
+        getMessages(error) || // getMessages is a helper function
+        "An error occurred"
+    );
+
+    // --------------------------
     this.bag = error;
     this.statusCode = statusCode;
     this.isOperational = isOperational;
+
+    Error.captureStackTrace(this, this.constructor);
+    // create a stack property on the object that represents the point in the code at which the Error was instantiated.
   }
 
   static badRequest(message = "Bad Request") {
