@@ -27,3 +27,10 @@ What is `populate` in mongoose
 What is `mergeParams` in express router
 
 <!--  -->
+
+There is a small problem in Error Handling in Middlewares and Express Validators
+it is returning 400 status code in message "Brand not found", "SubCategory not found"
+
+and that because throwing an error in the middleware will be caught by the error handler another middleware (doValidate)
+
+i will plan to fix that - insha'allah - in the next commit

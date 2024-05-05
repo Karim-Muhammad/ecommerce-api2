@@ -11,7 +11,7 @@ CategorySchema.pre("save", function (next) {
 CategorySchema.post(
   "findOneAndUpdate",
   { document: true, query: true }, // read more [here](https://mongoosejs.com/docs/middleware.html#types-of-middleware)
-  function (doc, next) {
+  (doc, next) => {
     console.log("Pre Middleware");
     // console.log("QUERY ", this);
     // console.log("DOCUMENT ", doc);
@@ -21,7 +21,7 @@ CategorySchema.post(
   }
 );
 
-CategorySchema.post("save", function (doc, next) {
+CategorySchema.post("save", (doc, next) => {
   console.log("Category has been saved", doc);
   next();
 });

@@ -64,7 +64,6 @@ exports.getAllSubCategories = async (req, res, next) => {
  */
 exports.getSubCategory = async (req, res, next) => {
   const { id } = req.params;
-
   const category = await SubCategory.findById(id);
   // .populate({
   //   path: "category",

@@ -32,6 +32,7 @@ if (config.node_env === "development") app.use(morgan("dev"));
 // Mini Apps
 app.use("/api/v1/categories", require("./src/routes/category"));
 app.use("/api/v1/sub-categories", require("./src/routes/sub-category"));
+app.use("/api/v1/brands", require("./src/routes/brand"));
 
 // 404 Handler
 app.all("*", (req, res, next) => {

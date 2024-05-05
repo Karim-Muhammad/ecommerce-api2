@@ -12,9 +12,13 @@ const {
   checkBodyDataRule,
   ensureIdMongoId,
   checkBodyDataInUpdateRule,
+  isIdMongoIdExists,
+} = require("../rules/sub-category");
+
+const {
   setCategoryIdToBody,
   ensureIdRelatedToCategory,
-} = require("../rules/sub-category");
+} = require("../middlewares/paramsMiddlewares");
 
 // handler can only access parameters of route related to
 // but cannot access parameters which outside of the route - [Learn more about mergeParams](https://expressjs.com/en/api.html#express.router)
@@ -27,13 +31,9 @@ router
 
 router
   .route("/:id")
-  .all(ensureIdMongoId, ensureIdRelatedToCategory) // check if the id is related to the category
+  .all(ensureIdMongoId, isIdMongoIdExists, ensureIdRelatedToCategory)
   .get(getSubCategory)
-  .patch(
-    setCategoryIdToBody, // set categoryId to body if it's available in params (nested route)
-    checkBodyDataInUpdateRule,
-    updateSubCategory
-  )
+  .patch(setCategoryIdToBody, checkBodyDataInUpdateRule, updateSubCategory)
   .delete(deleteSubCategory);
 
 module.exports = router;

@@ -20,10 +20,6 @@ function getMessages(error) {
  */
 class ApiError extends Error {
   constructor(statusCode, error, isOperational = true) {
-    // --------------------------
-    // console.log("ERROR: ", error);
-
-    // --------------------------
     super(
       error?.message ||
         error?.msg ||
