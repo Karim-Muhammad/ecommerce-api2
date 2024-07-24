@@ -34,3 +34,13 @@ it is returning 400 status code in message "Brand not found", "SubCategory not f
 and that because throwing an error in the middleware will be caught by the error handler another middleware (doValidate)
 
 i will plan to fix that - insha'allah - in the next commit
+
+### with just Async Handling
+
+![alt text](image.png)
+
+if async error occurs, app will crash
+
+if you use AsyncHandler, it will catch the error and pass it to the error handler middleware
+
+if you use catchAsync, it will catch the error and pass it to the error handler middleware

@@ -30,8 +30,8 @@ exports.createSubCategory = catchAsync(async (req, res, next) => {
  */
 exports.getAllSubCategories = async (req, res, next) => {
   const paginate = {
-    limit: +req.query.limit || 2,
     page: +req.query.page || 1,
+    limit: +req.query.limit || 2,
     get skip() {
       return (this.page - 1) * this.limit;
     },
@@ -70,10 +70,6 @@ exports.getSubCategory = async (req, res, next) => {
   //   select: "name -_id",
   // }); you don't need it here, it consume unnecessary more data
 
-  if (!category) {
-    return next(ApiError.notFound("SubCategory not Found!"));
-  }
-
   return res.status(200).json({
     data: category,
   });
@@ -87,18 +83,15 @@ exports.getSubCategory = async (req, res, next) => {
 exports.updateSubCategory = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
+  if (req.body.categoryId) {
+    req.body.category = req.body.categoryId;
+  }
+
   const updatedSubCategory = await SubCategory.findOneAndUpdate(
     { _id: id },
-    {
-      name: req.body.name,
-      category: req.body.categoryId,
-    },
+    req.body,
     { new: true }
   );
-
-  if (!updatedSubCategory) {
-    return next(ApiError.notFound("SubCategory not Found!"));
-  }
 
   res.status(200).json({
     data: updatedSubCategory,
@@ -115,6 +108,7 @@ exports.deleteSubCategory = catchAsync(async (req, res, next) => {
 
   const category = await SubCategory.findByIdAndDelete(id);
 
+  // we can remove it, because we use middleware to check if the id exists
   if (!category) {
     return next(ApiError.notFound("SubCategory not Found!"));
   }

@@ -8,22 +8,10 @@ CategorySchema.pre("save", function (next) {
 });
 
 // findOneAndUpdate !== findByIdAndUpdate
-CategorySchema.post(
-  "findOneAndUpdate",
-  { document: true, query: true }, // read more [here](https://mongoosejs.com/docs/middleware.html#types-of-middleware)
-  (doc, next) => {
-    console.log("Pre Middleware");
-    // console.log("QUERY ", this);
-    // console.log("DOCUMENT ", doc);
-    doc.slug = slugify(doc.name, { lower: true });
-    doc.save();
-    next();
-  }
-);
-
-CategorySchema.post("save", (doc, next) => {
-  console.log("Category has been saved", doc);
-  next();
+CategorySchema.pre("findOneAndUpdate", function (next) {
+  if (this._update.name)
+    this._update.slug = slugify(this._update.name, { lower: true });
+  next(); // without this, it will hang (won't save)
 });
 
 // Plugin to handle error of unique

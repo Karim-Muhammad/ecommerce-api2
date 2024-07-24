@@ -1,8 +1,9 @@
-const developmentErrorHandler = (err, req, res, next) => {
+const developmentErrorHandler = (err, _req, res, _next) => {
   // console.log(err);
   res.status(err.statusCode).json({
     error: {
       ...err,
+      // why below exists so!??
       stack: err.stack,
       message: err.message,
       isOperational: err.isOperational,
@@ -10,7 +11,7 @@ const developmentErrorHandler = (err, req, res, next) => {
   });
 };
 
-const productionErrorHandler = (err, req, res, next) => {
+const productionErrorHandler = (err, _req, res, _next) => {
   res.status(err.statusCode).json({
     error: {
       status: err.statusCode,

@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const ApiError = require("../utils/ApiError");
 
 exports.doValidate = (req, res, next) => {
+  console.log("~~~~~~~~~~~~~~~~~~~~ doValidate ~~~~~~~~~~~~~~~~~~~~");
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {

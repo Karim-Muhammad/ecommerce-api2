@@ -1,3 +1,7 @@
+/**
+ * "Virtuals" are computed properties: you can access virtuals on hydrated Mongoose documents,
+ *  but virtuals are not stored in MongoDB
+ */
 const CategorySchema = require("./schema");
 
 // Virtuals | Computed Properties

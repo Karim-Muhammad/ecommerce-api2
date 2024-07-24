@@ -1,5 +1,3 @@
-const { default: mongoose } = require("mongoose");
-
 const asyncHandler = require("express-async-handler");
 
 const Category = require("../models/Category");
@@ -13,22 +11,26 @@ const catchAsync = require("../utils/catchAsync");
  * @access Private/Admin
  * @request_body { name: "Category Name", description: "Category Description" }
  */
-exports.createCategory = catchAsync(async (req, res, next) => {
-  const { name, description } = req.body;
-  // const newCategory = new Category({ description });
-  const newCategory = new Category({ name, description });
+exports.createCategory = async (req, res, next) => {
+  // if we removed `catchAsync` throwing error will crash the app (if express version <5).
+  // if Express version >=5, it (throwing error) will be passed to next automatically (for `async` route handlers).
+  const newCategory = new Category(req.body);
 
   try {
     await newCategory.save();
+    // we can put it outside try..catch, and express will catch any rejected
+    // promise and pass it to next(error) and it will be handled by error handler middleware
+    // but we want to customize the error message, so we will use `throw` to throw the user-defined error
+
     res.status(201).json(newCategory);
   } catch (error) {
     // sometimes error should be 500 if there is error in code, or 400 if there is error in user input
     // we can remove this catch. and it will handle the message of error
-    // BUT the status code will be 500, becaise it is handled by catchAsync
+    // BUT the status code will be 500, because it is handled by catchAsync
 
-    throw new ApiError(400, error, true);
+    throw ApiError.badRequest(error.message);
   }
-});
+};
 
 /**
  * @description Get all categories
@@ -42,7 +44,7 @@ exports.getCategories = async (req, res, next) => {
   const skip = (page - 1) * limit;
 
   const categories = await Category.find({}).skip(skip).limit(limit);
-  res.status(200).json({ page, results: categories.length, data: categories });
+  res.status(200).json({ page, length: categories.length, data: categories });
 };
 
 /**
@@ -58,9 +60,12 @@ exports.getCategory = async (req, res, next) => {
 
   if (!category) {
     return next(ApiError.notFound("Category not found!"));
+    // in Express5, Throw this error will be passed to `next` automatically.
   }
 
-  res.status(200).json(category);
+  res.status(200).json({
+    data: category,
+  });
 };
 
 /**
@@ -69,27 +74,37 @@ exports.getCategory = async (req, res, next) => {
  * @access Private/Admin
  * @request_body { name: "Category Name", description?: "Category Description" }
  */
-exports.updateCategory = async (req, res, next) => {
+exports.updateCategory = catchAsync(async (req, res, next) => {
+  console.log(req.body);
+  // TODO: This unnecessary check, because Model will take only allowed fields, even if user post more fields
   const updates = Object.keys(req.body);
   const isAllowedFields = Category.isFillable(updates);
 
   if (!isAllowedFields) {
     return next(ApiError.badRequest("Invalid Fields!"));
+    // or
+    // throw new ApiError(400, "Invalid Fields!");
   }
 
-  const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  let category;
+  const updateTo = { ...req.body };
+  try {
+    category = await Category.findByIdAndUpdate(req.params.id, updateTo, {
+      new: true,
+      runValidators: true,
+    });
+  } catch (error) {
+    return next(ApiError.badRequest(error.message));
+  }
 
   if (!category) {
     return next(ApiError.notFound("Category you try to update is not found!"));
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     data: category,
   });
-};
+});
 
 /**
  * @description Delete single category
@@ -99,15 +114,15 @@ exports.updateCategory = async (req, res, next) => {
  */
 exports.deleteCategory = asyncHandler(async (req, res, next) => {
   const category = await Category.findByIdAndDelete(req.params.id);
-  // ObjectID is valid (24 digits) but not found
 
   if (!category) {
-    console.log("No Category with this id!");
     // Should use `return` to prevent further execution
-    return next(ApiError.notFound("No Category with this id!"));
+    // return next(ApiError.notFound("No Category with this id!"));
+    // or
+    throw new ApiError(404, "No Category with this id!");
+    // asyncHandler library came to solve problem in express < 5,
+    // but in in Express >= 5, solved the previous problem, so no need to use it.
   }
-
-  console.log("Category deleted successfully!");
 
   res.status(200).json({
     message: "Category deleted successfully!",

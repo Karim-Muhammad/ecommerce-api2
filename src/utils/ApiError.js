@@ -2,12 +2,12 @@ function getMessages(error) {
   if (Array.isArray(error)) {
     return error.reduce(
       (res, err) =>
-        `${res + (err.msg ?? err.message ?? "an error occured!")}\n`,
+        `${res + (err.message ?? err.msg ?? "an error occured!")}\n`,
       ""
     );
   }
 
-  return error.msg || error.message || "An error occurred!";
+  return error.message || error.msg || "An error occurred!";
 }
 
 /**
@@ -20,12 +20,7 @@ function getMessages(error) {
  */
 class ApiError extends Error {
   constructor(statusCode, error, isOperational = true) {
-    super(
-      error?.message ||
-        error?.msg ||
-        getMessages(error) || // getMessages is a helper function
-        "An error occurred"
-    );
+    super(getMessages(error)); // getMessages is a helper function
 
     // --------------------------
     this.bag = error;

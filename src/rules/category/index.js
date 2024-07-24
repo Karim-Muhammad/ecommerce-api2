@@ -29,13 +29,19 @@ exports.createCategoryRule = [
 
   body("description")
     // if exist so it must, be not empty and between 10 and 100 chars, otherwise it is optional
-    .optional({ values: ["", null] })
+    .if(body("description").exists())
     .isLength({ min: 10 })
-    .withMessage("Category 'description' must be at least 10 chars")
+    .withMessage(
+      "Category 'description' must be at least 10 chars, or don't send it in request!"
+    )
     .isLength({ max: 100 })
     .withMessage("Category 'description' must be at most 100 chars"),
 
-  body("status").optional().isIn(["active", "inactive"]),
+  // Equivalent to: if(body("status").exists()) body("status").isIn(["active", "inactive"])
+  body("status")
+    .optional()
+    .isIn(["active", "inactive"])
+    .withMessage("Category 'status' must be either 'active' or 'inactive'."),
 
   // 2) Validate
   doValidate,
@@ -46,19 +52,20 @@ exports.createCategoryRule = [
  */
 exports.updateCategoryRule = [
   body("name")
-    .optional()
+    .if(body("name").exists())
     .isLength({ min: 3 })
     .withMessage("Category 'name' must be at least 3 chars")
     .isLength({ max: 32 })
     .withMessage("Category 'name' must be at most 32 chars"),
 
   body("description")
-    // if exist so it must, be not empty and between 10 and 100 chars, otherwise it is optional
-    .optional({ values: ["", null] })
+    .if(body("description").exists())
     .isLength({ min: 10 })
     .withMessage("Category 'description' must be at least 10 chars")
     .isLength({ max: 100 })
     .withMessage("Category 'description' must be at most 100 chars"),
+  // .optional({ values: ["", null] })
+  // if exist so it must, be not empty and between 10 and 100 chars, otherwise it is optional
 
   body("status").optional().isIn(["active", "inactive"]),
 

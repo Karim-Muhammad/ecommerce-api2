@@ -6,9 +6,9 @@ const catchAsync = require("../utils/catchAsync");
  * @description Check if the id which exists in the database is related to the given category
  */
 exports.ensureIdRelatedToCategory = catchAsync(async (req, res, next) => {
-  const subCategory = await SubCategoryModel.findById(req.params.id);
-
   if (!req.params.categoryId) return next();
+
+  const subCategory = await SubCategoryModel.findById(req.params.id);
 
   if (subCategory.category.toString() !== req.params.categoryId) {
     throw new ApiError(400, {

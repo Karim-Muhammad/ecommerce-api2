@@ -33,6 +33,7 @@ if (config.node_env === "development") app.use(morgan("dev"));
 app.use("/api/v1/categories", require("./src/routes/category"));
 app.use("/api/v1/sub-categories", require("./src/routes/sub-category"));
 app.use("/api/v1/brands", require("./src/routes/brand"));
+app.use("/api/v1/products", require("./src/routes/product"));
 
 // 404 Handler
 app.all("*", (req, res, next) => {
@@ -55,7 +56,7 @@ const server = app.listen(config.port, () => {
 
 process.on("unhandledRejection", (err) => {
   console.error("Uncaught Rejection! Shutting down...");
-  console.error(err.name, err.message);
+  console.error(err);
   server.close(() => {
     process.exit(1);
   });
@@ -65,7 +66,7 @@ process.on("unhandledRejection", (err) => {
 // This is for handling uncaught exception
 process.on("uncaughtException", (err) => {
   console.error("Uncaught Exception! Shutting down...");
-  console.error(err.name, err.message);
+  console.error(err);
   server.close(() => {
     process.exit(1);
   });

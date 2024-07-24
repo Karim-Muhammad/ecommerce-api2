@@ -5,7 +5,7 @@ const morgan = require("morgan");
 require("dotenv").config();
 
 // Configuration file
-const config = require("./config");
+const config = require("../config");
 
 // Connect to database
 mongoose
@@ -33,12 +33,8 @@ app.use(express.json());
 
 if (config.node_env === "development") app.use(morgan("dev"));
 
-app.get("/", (req, res, next) => {
-  res.send("Hello World");
-});
-
 app.post("/", (req, res, next) => {
-  const name = req.body.name;
+  const { name } = req.body;
   const newCategory = new CategoryModel({ name });
   newCategory
     .save()
