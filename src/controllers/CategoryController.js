@@ -75,21 +75,10 @@ exports.getCategory = async (req, res, next) => {
  * @request_body { name: "Category Name", description?: "Category Description" }
  */
 exports.updateCategory = catchAsync(async (req, res, next) => {
-  console.log(req.body);
-  // TODO: This unnecessary check, because Model will take only allowed fields, even if user post more fields
-  const updates = Object.keys(req.body);
-  const isAllowedFields = Category.isFillable(updates);
-
-  if (!isAllowedFields) {
-    return next(ApiError.badRequest("Invalid Fields!"));
-    // or
-    // throw new ApiError(400, "Invalid Fields!");
-  }
-
   let category;
-  const updateTo = { ...req.body };
+
   try {
-    category = await Category.findByIdAndUpdate(req.params.id, updateTo, {
+    category = await Category.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
