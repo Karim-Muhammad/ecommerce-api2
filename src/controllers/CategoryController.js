@@ -4,6 +4,7 @@ const Category = require("../models/Category");
 
 const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
+const QueryFeatures = require("../utils/QueryFeatures");
 
 /**
  * @description Create a new category
@@ -39,12 +40,17 @@ exports.createCategory = async (req, res, next) => {
  * @request_body { }
  */
 exports.getCategories = async (req, res, next) => {
-  const page = +req.query.page || 1;
-  const limit = +req.query.limit || 3;
-  const skip = (page - 1) * limit;
+  const categoryQuery = Category.find({});
+  const { mongooseQuery, pagination } = await new QueryFeatures(
+    categoryQuery,
+    req.query
+  ).all();
 
-  const categories = await Category.find({}).skip(skip).limit(limit);
-  res.status(200).json({ page, length: categories.length, data: categories });
+  const categories = await mongooseQuery;
+
+  return res
+    .status(200)
+    .json({ pagination, length: categories.length, data: categories });
 };
 
 /**

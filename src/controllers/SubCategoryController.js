@@ -1,6 +1,7 @@
 const ApiError = require("../utils/ApiError");
 const SubCategory = require("../models/SubCategory");
 const catchAsync = require("../utils/catchAsync"); // created by me
+const QueryFeatures = require("../utils/QueryFeatures");
 
 /**
  * @description Create a new sub category
@@ -29,31 +30,27 @@ exports.createSubCategory = catchAsync(async (req, res, next) => {
  * @access Public
  */
 exports.getAllSubCategories = async (req, res, next) => {
-  const paginate = {
-    page: +req.query.page || 1,
-    limit: +req.query.limit || 2,
-    get skip() {
-      return (this.page - 1) * this.limit;
-    },
-  };
-
   // to get all sub-categories of a specific category
   // otherwise, it will return all sub-categories
   const filter = {};
   if (req.params.categoryId) filter.category = req.params.categoryId;
 
-  const categories = await SubCategory.find(filter)
-    .skip(paginate.skip)
-    .limit(paginate.limit)
-    .populate({
-      path: "category",
-      select: "name -_id", // to exclude _id from the result
-    });
+  const subCategoriesQuery = SubCategory.find(filter).populate({
+    path: "category",
+    select: "name -_id", // to exclude _id from the result
+  });
+
+  const { mongooseQuery, pagination } = await new QueryFeatures(
+    subCategoriesQuery,
+    req.query
+  ).all();
+
+  const subCategories = await mongooseQuery;
 
   res.status(200).json({
-    page: paginate.page,
-    length: categories.length,
-    data: categories,
+    pagination,
+    length: subCategories.length,
+    data: subCategories,
   });
 };
 

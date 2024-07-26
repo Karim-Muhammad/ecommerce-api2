@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
 const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
+const QueryFeatures = require("../utils/QueryFeatures");
 
 /**
  * @description Get all products
@@ -11,69 +12,25 @@ const catchAsync = require("../utils/catchAsync");
  * @returns [Products]
  */
 exports.getProducts = catchAsync(async (req, res) => {
-  // 1) Pagination
-  const paginate = {
-    page: +req.query.page || 1,
-    limit: +req.query.limit || 10,
-    get skip() {
-      return (this.page - 1) * this.limit;
-    },
-  };
+  // if you forgot `await` you will get error Converting circular structure to JSON
+  const productsQuery = Product.find();
 
-  // 2) Query Filtering
-  const excludedFields = ["page", "limit", "sort", "fields", "search"];
-  let filterBy = { ...req.query };
-
-  console.log("===", filterBy);
-  excludedFields.forEach((field) => delete filterBy[field]);
-
-  filterBy = JSON.stringify(filterBy);
-  filterBy = filterBy.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
-  filterBy = JSON.parse(filterBy);
+  const { mongooseQuery, pagination } = await new QueryFeatures(
+    productsQuery,
+    req.query
+  )
+    .filter()
+    .sort()
+    .projection()
+    .search("name", "description")
+    .paginate();
 
   // if you forgot `await` you will get error Converting circular structure to JSON
-  let productsQuery = Product.find(filterBy)
-    .limit(paginate.limit)
-    .skip(paginate.skip)
-    .sort("-createdAt");
-
-  // 3) Sorting
-  if (req.query.sort) {
-    const sortBy = req.query.sort.split(",").join(" ");
-    console.log("Sort By", sortBy);
-    productsQuery = productsQuery.sort(sortBy);
-  }
-
-  // 4) Limited Fields
-  if (req.query.fields) {
-    const fields = req.query.fields.split(",").join(" ");
-    productsQuery = productsQuery.select(fields);
-  } else {
-    productsQuery = productsQuery.select("-__v");
-  }
-
-  // 5) Search
-  if (req.query.search) {
-    const searchTerm = req.query.search;
-
-    productsQuery = productsQuery.find({
-      $or: [
-        {
-          name: { $regex: searchTerm, $options: "i" },
-        },
-        {
-          description: { $regex: searchTerm, $options: "i" },
-        },
-      ],
-    });
-  }
-
-  // if you forgot `await` you will get error Converting circular structure to JSON
-  const products = await productsQuery;
+  const products = await mongooseQuery;
 
   return res
     .status(200)
-    .json({ page: paginate.page, length: products.length, data: products });
+    .json({ pagination, length: products?.length, data: products });
 });
 
 /**

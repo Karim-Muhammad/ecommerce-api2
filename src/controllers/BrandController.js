@@ -1,6 +1,7 @@
 const Brand = require("../models/Brand");
 const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
+const QueryFeatures = require("../utils/QueryFeatures");
 
 /**
  * @description Create a new brand
@@ -29,21 +30,22 @@ exports.createBrand = catchAsync(async (req, res, next) => {
  * @response { page: 1, length: 2, data: [ { brand1 }, { brand2 } ] }
  */
 exports.getBrands = catchAsync(async (req, res, next) => {
-  const paginate = {
-    page: req.query.page || 1,
-    limit: req.query.limit || 2,
-    get skip() {
-      return (this.page - 1) * this.limit;
-    },
-  };
+  const brandsQuery = Brand.find({});
+  const { mongooseQuery, pagination } = await new QueryFeatures(
+    brandsQuery,
+    req.query
+  )
+    .filter()
+    .sort()
+    .search("name")
+    .projection()
+    .paginate();
 
-  const brands = await Brand.find({}, { __v: 0 })
-    .limit(paginate.limit)
-    .skip(paginate.skip);
+  const brands = await mongooseQuery;
 
   return res
     .status(200)
-    .json({ page: paginate.page, length: brands.length, data: brands });
+    .json({ pagination, length: brands.length, data: brands });
 });
 
 /**

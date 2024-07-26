@@ -1,5 +1,8 @@
 /**
- * @description Helper Class For Apply Query Features (filter, sort, select, pagination)
+ * @description Helper Class For Apply Query Features
+ * ```
+ * (Searching, Filteration, Sorting, Projection, Pagination) (5 features)
+ * ```
  */
 class QueryFeatures {
   constructor(mongooseQuery, requestQuery) {
@@ -8,6 +11,14 @@ class QueryFeatures {
     this.requestQuery = requestQuery;
 
     this.reservedQueries = ["page", "limit", "sort", "fields", "search"];
+
+    this.pagination = {
+      page: +requestQuery.page || 1,
+      limit: +requestQuery.limit || 7,
+      get skip() {
+        return (this.page - 1) * this.limit;
+      },
+    };
   }
 
   /**
@@ -18,6 +29,8 @@ class QueryFeatures {
   filter() {
     let queryString = { ...this.requestQuery };
 
+    this.reservedQueries.forEach((q) => delete queryString[q]);
+
     queryString = JSON.stringify(queryString).replace(
       /\b(gt|gte|lt|lte)\b/g,
       (match) => `$${match}`
@@ -26,9 +39,9 @@ class QueryFeatures {
     // price: {gt: ***} -> price: {$gt: ***}
     queryString = JSON.parse(queryString);
 
-    const filterBy = this.reservedQueries.forEach((q) => delete queryString[q]);
+    console.log("QueryString", queryString);
 
-    this.mongooseQuery = this.mongooseQuery.find(filterBy);
+    this.mongooseQuery = this.mongooseQuery.find(queryString);
 
     return this;
   }
@@ -74,14 +87,18 @@ class QueryFeatures {
    * @example "{BASE_URL}/products?page=2&limit=10"
    * @returns QueryFeatures Instance
    */
-  paginate() {
-    const paginate = {
-      page: this.requestQuery.page || 1,
-      limit: this.requestQuery.limit || 7,
-      get skip() {
-        return (this.page - 1) * this.limit;
-      },
-    };
+  async paginate() {
+    const paginate = this.pagination;
+    const { limit, page, skip } = paginate;
+
+    // Get Totol number of documents after you finished chain of filteration
+    const countOfDocuments = await this.mongooseQuery.clone().countDocuments();
+
+    paginate.numberOfPages = Math.ceil(countOfDocuments / limit);
+    console.log(countOfDocuments, paginate.numberOfPages);
+
+    paginate.nextPage = page < paginate.numberOfPages ? page + 1 : null;
+    paginate.prevPage = skip > 0 ? page - 1 : null;
 
     this.mongooseQuery = this.mongooseQuery
       .skip(paginate.skip)
@@ -95,19 +112,22 @@ class QueryFeatures {
    * @ignore keys for each model is different (name, description) exist in specific models not all.
    * @returns QueryFeatures Instance
    */
-  search() {
+  search(...keys) {
     const searchTerm = this.requestQuery.search;
 
     if (searchTerm) {
       this.mongooseQuery = this.mongooseQuery.find({
-        $or: [
-          { name: { $regex: searchTerm, $options: "i" } },
-          { description: { $regex: searchTerm, $options: "i" } },
-        ],
+        $or: keys.map((key) => ({
+          [key]: { $regex: `\\b${searchTerm}\\b`, $options: "i" },
+        })),
       });
     }
 
     return this;
+  }
+
+  async all(search = "name") {
+    return await this.search(search).filter().sort().projection().paginate();
   }
 }
 
