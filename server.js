@@ -1,6 +1,8 @@
 // Deps
 const express = require("express");
 
+const qs = require("qs");
+
 const morgan = require("morgan");
 
 require("dotenv").config();
@@ -20,12 +22,14 @@ setupConnection();
 
 // Express app
 const app = express();
+app.set("query parser", (str) => qs.parse(str));
 
 // Configurations
 // app.use("json spaces", 2);
 
 // Parse Body of JSON request
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 if (config.node_env === "development") app.use(morgan("dev"));
 

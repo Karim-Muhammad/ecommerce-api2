@@ -11,6 +11,7 @@ const catchAsync = require("../utils/catchAsync");
  * @returns [Products]
  */
 exports.getProducts = catchAsync(async (req, res) => {
+  // 1) Pagination
   const paginate = {
     page: +req.query.page || 1,
     limit: +req.query.limit || 10,
@@ -19,10 +20,56 @@ exports.getProducts = catchAsync(async (req, res) => {
     },
   };
 
+  // 2) Query Filtering
+  const excludedFields = ["page", "limit", "sort", "fields", "search"];
+  let filterBy = { ...req.query };
+
+  console.log("===", filterBy);
+  excludedFields.forEach((field) => delete filterBy[field]);
+
+  filterBy = JSON.stringify(filterBy);
+  filterBy = filterBy.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
+  filterBy = JSON.parse(filterBy);
+
   // if you forgot `await` you will get error Converting circular structure to JSON
-  const products = await Product.find({})
+  let productsQuery = Product.find(filterBy)
     .limit(paginate.limit)
-    .skip(paginate.skip);
+    .skip(paginate.skip)
+    .sort("-createdAt");
+
+  // 3) Sorting
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    console.log("Sort By", sortBy);
+    productsQuery = productsQuery.sort(sortBy);
+  }
+
+  // 4) Limited Fields
+  if (req.query.fields) {
+    const fields = req.query.fields.split(",").join(" ");
+    productsQuery = productsQuery.select(fields);
+  } else {
+    productsQuery = productsQuery.select("-__v");
+  }
+
+  // 5) Search
+  if (req.query.search) {
+    const searchTerm = req.query.search;
+
+    productsQuery = productsQuery.find({
+      $or: [
+        {
+          name: { $regex: searchTerm, $options: "i" },
+        },
+        {
+          description: { $regex: searchTerm, $options: "i" },
+        },
+      ],
+    });
+  }
+
+  // if you forgot `await` you will get error Converting circular structure to JSON
+  const products = await productsQuery;
 
   return res
     .status(200)

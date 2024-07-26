@@ -155,10 +155,7 @@ exports.validateBodyRequest = [
 
       // Check if These SubCategories belong to Category
       const isSubCategoriesBelongsToCategory = allExists.every(
-        (subCategory) => {
-          console.log("Test ", subCategory.category, req.body.category);
-          return subCategory.category.toString() === req.body.category;
-        }
+        (subCategory) => subCategory.category.toString() === req.body.category
       );
 
       if (!isSubCategoriesBelongsToCategory) {
