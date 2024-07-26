@@ -11,6 +11,7 @@ const express = require("express");
 
 const router = express.Router();
 
+const CategoryModel = require("../models/Category");
 const {
   createCategory,
   getCategories,
@@ -19,21 +20,21 @@ const {
   deleteCategory,
 } = require("../controllers/CategoryController");
 
+const { createCategoryRule, updateCategoryRule } = require("../rules/category");
+
 const {
-  getCategoryRule,
-  createCategoryRule,
-  updateCategoryRule,
-  deleteCategoryRule,
-} = require("../rules/category");
+  isIdMongoIdExistsRule,
+  ensureIdMongoIdRule,
+} = require("../rules/shared");
 
 router.route("/").get(getCategories).post(createCategoryRule, createCategory);
 
 router
   .route("/:id")
-  .all(getCategoryRule)
+  .all(ensureIdMongoIdRule(CategoryModel), isIdMongoIdExistsRule(CategoryModel))
   .get(getCategory)
   .patch(updateCategoryRule, updateCategory)
-  .delete(deleteCategoryRule, deleteCategory);
+  .delete(deleteCategory);
 
 router.use("/:categoryId/sub-categories", require("./sub-category"));
 // router.use("/:id/products", require("./product"));

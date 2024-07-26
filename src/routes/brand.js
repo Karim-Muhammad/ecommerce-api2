@@ -1,12 +1,23 @@
 const { Router } = require("express");
+
+// =================== [MODELS] ===================
+const Brand = require("../models/Brand");
+
+// =================== [CONTROLLERS] ===================
 const BrandController = require("../controllers/BrandController");
+
+// =================== [RULES] ===================
 const {
   checkBrandBodyRule,
   checkBrandBodyUpdateRule,
-  ensureIdMongoIdRule,
-  isIdMongoIdExistsRule,
 } = require("../rules/brand");
 
+const {
+  ensureIdMongoIdRule,
+  isIdMongoIdExistsRule,
+} = require("../rules/shared");
+
+// =================== [ROUTES] ===================
 const router = Router();
 
 router
@@ -16,10 +27,10 @@ router
 
 router
   .route("/:id")
-  .all(ensureIdMongoIdRule, isIdMongoIdExistsRule)
-  .patch(checkBrandBodyUpdateRule, BrandController.updateBrand) // you don't need to always check (!brand)
-  .get(BrandController.getBrand) // you don't need to always check (!brand)
-  .delete(BrandController.deleteBrand); // you don't need to always check (!brand)
+  .all(ensureIdMongoIdRule(Brand), isIdMongoIdExistsRule(Brand)) // you don't need to always check (!brand)
+  .patch(checkBrandBodyUpdateRule, BrandController.updateBrand)
+  .get(BrandController.getBrand)
+  .delete(BrandController.deleteBrand);
 
 /**
  * checkBrandBodyRule before update not a little bit a problem

@@ -59,15 +59,8 @@ exports.getCategories = async (req, res, next) => {
  * @access Public
  * @request_body { }
  */
-exports.getCategory = async (req, res, next) => {
+exports.getCategory = async (req, res) => {
   const category = await Category.findById(req.params.id);
-
-  // if findById doesn't exist it will return `null`
-
-  if (!category) {
-    return next(ApiError.notFound("Category not found!"));
-    // in Express5, Throw this error will be passed to `next` automatically.
-  }
 
   res.status(200).json({
     data: category,
@@ -108,19 +101,7 @@ exports.updateCategory = catchAsync(async (req, res, next) => {
  * @request_body { }
  */
 exports.deleteCategory = asyncHandler(async (req, res, next) => {
-  const category = await Category.findByIdAndDelete(req.params.id);
+  await Category.findByIdAndDelete(req.params.id);
 
-  if (!category) {
-    // Should use `return` to prevent further execution
-    // return next(ApiError.notFound("No Category with this id!"));
-    // or
-    throw new ApiError(404, "No Category with this id!");
-    // asyncHandler library came to solve problem in express < 5,
-    // but in in Express >= 5, solved the previous problem, so no need to use it.
-  }
-
-  res.status(200).json({
-    message: "Category deleted successfully!",
-    data: category,
-  });
+  res.status(204).json({ data: null });
 });

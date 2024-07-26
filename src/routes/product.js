@@ -4,11 +4,14 @@ const ProductController = require("../controllers/ProductController");
 
 const {
   validateBodyRequest,
-  isIdMongoId,
   validateBodyUpdateRequest,
 } = require("../rules/product");
 
-const { isIdExist } = require("../middlewares/products");
+const {
+  ensureIdMongoIdRule,
+  isIdMongoIdExistsRule,
+} = require("../rules/shared");
+const Product = require("../models/Product");
 
 const router = Router();
 
@@ -22,7 +25,7 @@ router
 
 router
   .route("/:id")
-  .all(isIdMongoId, isIdExist)
+  .all(ensureIdMongoIdRule(Product), isIdMongoIdExistsRule(Product))
   .get(ProductController.getProduct)
   .patch(
     validateBodyUpdateRequest,

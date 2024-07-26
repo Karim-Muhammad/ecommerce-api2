@@ -59,13 +59,8 @@ exports.getAllSubCategories = async (req, res, next) => {
  * @route GET /api/v1/sub-categories/:id
  * @access Public
  */
-exports.getSubCategory = async (req, res, next) => {
-  const { id } = req.params;
-  const category = await SubCategory.findById(id);
-  // .populate({
-  //   path: "category",
-  //   select: "name -_id",
-  // }); you don't need it here, it consume unnecessary more data
+exports.getSubCategory = async (req, res) => {
+  const category = await SubCategory.findById(req.params.id);
 
   return res.status(200).json({
     data: category,
@@ -101,14 +96,7 @@ exports.updateSubCategory = catchAsync(async (req, res, next) => {
  * @access Private/Admin
  */
 exports.deleteSubCategory = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-
-  const category = await SubCategory.findByIdAndDelete(id);
-
-  // we can remove it, because we use middleware to check if the id exists
-  if (!category) {
-    return next(ApiError.notFound("SubCategory not Found!"));
-  }
+  await SubCategory.findByIdAndDelete(req.params.id);
 
   res.status(204).json({
     data: null,

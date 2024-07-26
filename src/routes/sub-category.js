@@ -1,5 +1,6 @@
 const express = require("express");
 
+const SubCategoryModel = require("../models/SubCategory");
 const {
   createSubCategory,
   getAllSubCategories,
@@ -10,15 +11,18 @@ const {
 
 const {
   checkBodyDataRule,
-  ensureIdMongoId,
   checkBodyDataInUpdateRule,
-  isIdMongoIdExists,
 } = require("../rules/sub-category");
 
 const {
   setCategoryIdToBody,
   ensureIdRelatedToCategory,
 } = require("../middlewares/paramsMiddlewares");
+
+const {
+  ensureIdMongoIdRule,
+  isIdMongoIdExistsRule,
+} = require("../rules/shared");
 
 // handler can only access parameters of route related to
 // but cannot access parameters which outside of the route - [Learn more about mergeParams](https://expressjs.com/en/api.html#express.router)
@@ -31,7 +35,11 @@ router
 
 router
   .route("/:id")
-  .all(ensureIdMongoId, isIdMongoIdExists, ensureIdRelatedToCategory)
+  .all(
+    ensureIdMongoIdRule(SubCategoryModel),
+    isIdMongoIdExistsRule(SubCategoryModel),
+    ensureIdRelatedToCategory
+  )
   .get(getSubCategory)
   .patch(setCategoryIdToBody, checkBodyDataInUpdateRule, updateSubCategory)
   .delete(deleteSubCategory);

@@ -31,15 +31,11 @@ exports.createBrand = catchAsync(async (req, res, next) => {
  */
 exports.getBrands = catchAsync(async (req, res, next) => {
   const brandsQuery = Brand.find({});
+
   const { mongooseQuery, pagination } = await new QueryFeatures(
     brandsQuery,
     req.query
-  )
-    .filter()
-    .sort()
-    .search("name")
-    .projection()
-    .paginate();
+  ).all();
 
   const brands = await mongooseQuery;
 
@@ -57,11 +53,8 @@ exports.getBrands = catchAsync(async (req, res, next) => {
  * @response { data: { brand } }
  * @error { 404: "Brand with id ${brandId} not found" }
  */
-exports.getBrand = catchAsync(async (req, res, next) => {
-  const brandId = req.params.id;
-  const brand = await Brand.findById(brandId);
-
-  // i didn't check (!brand)
+exports.getBrand = catchAsync(async (req, res) => {
+  const brand = await Brand.findById(req.params.id);
 
   return res.status(200).json({ data: brand });
 });
@@ -76,21 +69,14 @@ exports.getBrand = catchAsync(async (req, res, next) => {
  * @error { 404: "Brand with id ${brandId} not found" }
  */
 exports.updateBrand = catchAsync(async (req, res, next) => {
-  const brandId = req.params.id;
-  const { name, description, status } = req.body;
-
   try {
-    const brand = await Brand.findByIdAndUpdate(
-      brandId,
-      { name, description, status },
-      { new: true, runValidators: true }
-    );
-
-    // i didn't check (!brand)
+    const brand = await Brand.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     return res.status(200).json({ data: brand });
   } catch (error) {
-    // console.log(error);
     throw new ApiError(400, error, true);
   }
 });
@@ -105,10 +91,7 @@ exports.updateBrand = catchAsync(async (req, res, next) => {
  * @error { 404: "Brand with id ${brandId} not found" }
  */
 exports.deleteBrand = catchAsync(async (req, res, next) => {
-  const brandId = req.params.id;
-  await Brand.findByIdAndDelete(brandId);
-
-  // i didn't check (!brand)
+  await Brand.findByIdAndDelete(req.params.id);
 
   return res.status(204).json({ data: null });
 });

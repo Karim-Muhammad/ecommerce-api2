@@ -1,9 +1,6 @@
 const validator = require("express-validator");
 
 const { doValidate } = require("../../validators");
-const ApiError = require("../../utils/ApiError");
-const Brand = require("../../models/Brand");
-const catchAsync = require("../../utils/catchAsync");
 
 exports.checkBrandBodyRule = [
   validator
@@ -73,27 +70,6 @@ exports.checkBrandBodyUpdateRule = [
     .optional()
     .isBoolean()
     .withMessage("Status must be a boolean"),
-
-  doValidate,
-];
-
-exports.ensureIdMongoIdRule = [
-  validator.param("id").isMongoId().withMessage("id must be a valid MongoId"),
-  doValidate,
-];
-
-exports.isIdMongoIdExistsRule = [
-  validator.param("id").custom(async (value) => {
-    const brand = await Brand.findById(value);
-
-    if (!brand) {
-      throw ApiError.notFound("Brand not found");
-      // throw new ApiError(404, { message: "Brand not found" }); // working
-      // throw new Error("Brand not found"); works
-    }
-
-    return true;
-  }),
 
   doValidate,
 ];

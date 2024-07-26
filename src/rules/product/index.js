@@ -6,15 +6,6 @@ const { doValidate } = require("../../validators");
 const CategoryModel = require("../../models/Category");
 const SubCategory = require("../../models/SubCategory");
 
-exports.isIdMongoId = [
-  validate
-    .param("id")
-    .isMongoId()
-    .withMessage("Product ID must be a valid MongoDB ID."),
-
-  doValidate,
-];
-
 exports.validateBodyRequest = [
   validate
     .body("name")
@@ -178,7 +169,6 @@ exports.validateBodyRequest = [
  * You can assign it to many sub-category but single category
  * [test case]: assign it to sub-category that not related to the category
  */
-
 exports.validateBodyUpdateRequest = [
   validate
     .body("name")

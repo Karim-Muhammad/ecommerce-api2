@@ -1,19 +1,5 @@
-const { param, body } = require("express-validator");
+const { body } = require("express-validator");
 const { doValidate } = require("../../validators");
-
-// we can use `check` instead of `param` for query, body, header, etc. (it is more generic)
-// but we will stick with `param` it is more readable and specific
-
-/**
- * @description check if the passed category ID parameter is valid.
- */
-exports.getCategoryRule = [
-  // 1) Rules
-  param("id").isMongoId().withMessage("Category ID is not valid!"),
-
-  // 2) Validate
-  doValidate,
-];
 
 /**
  * @description check if the data passed in the body is matched the required fields.
@@ -68,17 +54,6 @@ exports.updateCategoryRule = [
   // if exist so it must, be not empty and between 10 and 100 chars, otherwise it is optional
 
   body("status").optional().isIn(["active", "inactive"]),
-
-  // 2) Validate
-  doValidate,
-];
-
-/**
- * @description check if the passed category ID parameter is valid.
- */
-exports.deleteCategoryRule = [
-  // 1) Rules
-  param("id").isMongoId().withMessage("Category ID is not valid!"),
 
   // 2) Validate
   doValidate,

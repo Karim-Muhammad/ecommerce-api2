@@ -1,4 +1,4 @@
-const { body, param } = require("express-validator");
+const { body } = require("express-validator");
 
 const { default: mongoose } = require("mongoose");
 
@@ -7,8 +7,6 @@ const Category = require("../../models/Category");
 const ApiError = require("../../utils/ApiError");
 
 const { doValidate } = require("../../validators");
-const catchAsync = require("../../utils/catchAsync");
-const SubCategoryModel = require("../../models/SubCategory");
 
 /** ====================================== [Body] ================================ */
 /**
@@ -67,32 +65,3 @@ exports.checkBodyDataInUpdateRule = [
   doValidate,
 ];
 /** ====================================== [Body.] ================================ */
-
-/** ====================================== [MongoId] ================================ */
-/**
- * @description Check if the id is a valid MongoId
- */
-exports.ensureIdMongoId = [
-  param("id").isMongoId().withMessage("id must be a valid MongoId"),
-  doValidate,
-];
-
-/**
- * @description Check if the id exists in the database
- */
-exports.isIdMongoIdExists = [
-  // ID is valid or not
-  param("id").custom(async (value) => {
-    const subCategory = await SubCategoryModel.findById(value);
-
-    if (!subCategory) {
-      throw new Error("SubCategory not found :(");
-    }
-
-    return true;
-  }),
-
-  doValidate,
-];
-
-/** ====================================== [MongoId.] ================================ */

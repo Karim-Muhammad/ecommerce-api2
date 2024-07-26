@@ -19,11 +19,8 @@ exports.getProducts = catchAsync(async (req, res) => {
     productsQuery,
     req.query
   )
-    .filter()
-    .sort()
-    .projection()
     .search("name", "description")
-    .paginate();
+    .all();
 
   // if you forgot `await` you will get error Converting circular structure to JSON
   const products = await mongooseQuery;
@@ -42,8 +39,7 @@ exports.getProducts = catchAsync(async (req, res) => {
  * @returns Product
  */
 exports.getProduct = async (req, res) => {
-  const { id } = req.params;
-  const product = await Product.findById(id);
+  const product = await Product.findById(req.params.id);
 
   return res.status(200).json({
     data: product,
@@ -102,8 +98,7 @@ exports.updateProduct = async (req, res) => {
  * @returns
  */
 exports.deleteProduct = async (req, res) => {
-  const { id } = req.params;
-  await Product.findByIdAndDelete(id);
+  await Product.findByIdAndDelete(req.params.id);
 
-  return res.status(204).json();
+  return res.status(204).json({ data: null });
 };
