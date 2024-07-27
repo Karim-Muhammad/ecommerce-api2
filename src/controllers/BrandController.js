@@ -1,7 +1,12 @@
 const Brand = require("../models/Brand");
-const ApiError = require("../utils/ApiError");
-const catchAsync = require("../utils/catchAsync");
-const QueryFeatures = require("../utils/QueryFeatures");
+
+const {
+  deleteOne,
+  getOne,
+  getAll,
+  createOne,
+  updateOne,
+} = require("../utils/CRUDController");
 
 /**
  * @description Create a new brand
@@ -9,17 +14,7 @@ const QueryFeatures = require("../utils/QueryFeatures");
  * @access Private/Admin
  * @request_body { name: "Brand Name", description: "Brand Description", status: "active" }
  */
-exports.createBrand = catchAsync(async (req, res, next) => {
-  const { name, description, status } = req.body;
-  const newBrand = new Brand({ name, description, status });
-  try {
-    await newBrand.save();
-  } catch (error) {
-    throw new ApiError(400, error, true);
-  }
-
-  res.status(201).json(newBrand);
-});
+exports.createBrand = createOne(Brand);
 
 /**
  * @description Get all brands
@@ -29,20 +24,7 @@ exports.createBrand = catchAsync(async (req, res, next) => {
  * @query { page: 1, limit: 2 }
  * @response { page: 1, length: 2, data: [ { brand1 }, { brand2 } ] }
  */
-exports.getBrands = catchAsync(async (req, res, next) => {
-  const brandsQuery = Brand.find({});
-
-  const { mongooseQuery, pagination } = await new QueryFeatures(
-    brandsQuery,
-    req.query
-  ).all();
-
-  const brands = await mongooseQuery;
-
-  return res
-    .status(200)
-    .json({ pagination, length: brands.length, data: brands });
-});
+exports.getBrands = getAll(Brand);
 
 /**
  * @description Get single brand
@@ -53,11 +35,7 @@ exports.getBrands = catchAsync(async (req, res, next) => {
  * @response { data: { brand } }
  * @error { 404: "Brand with id ${brandId} not found" }
  */
-exports.getBrand = catchAsync(async (req, res) => {
-  const brand = await Brand.findById(req.params.id);
-
-  return res.status(200).json({ data: brand });
-});
+exports.getBrand = getOne(Brand);
 
 /**
  * @description Update single brand
@@ -68,18 +46,7 @@ exports.getBrand = catchAsync(async (req, res) => {
  * @response { data: { brand } }
  * @error { 404: "Brand with id ${brandId} not found" }
  */
-exports.updateBrand = catchAsync(async (req, res, next) => {
-  try {
-    const brand = await Brand.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    return res.status(200).json({ data: brand });
-  } catch (error) {
-    throw new ApiError(400, error, true);
-  }
-});
+exports.updateBrand = updateOne(Brand);
 
 /**
  * @description Delele single brand
@@ -90,8 +57,4 @@ exports.updateBrand = catchAsync(async (req, res, next) => {
  * @response { data: null }
  * @error { 404: "Brand with id ${brandId} not found" }
  */
-exports.deleteBrand = catchAsync(async (req, res, next) => {
-  await Brand.findByIdAndDelete(req.params.id);
-
-  return res.status(204).json({ data: null });
-});
+exports.deleteBrand = deleteOne(Brand);

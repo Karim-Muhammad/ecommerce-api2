@@ -1,7 +1,11 @@
 const Product = require("../models/Product");
-const ApiError = require("../utils/ApiError");
-const catchAsync = require("../utils/catchAsync");
-const QueryFeatures = require("../utils/QueryFeatures");
+const {
+  deleteOne,
+  getOne,
+  getAll,
+  createOne,
+  updateOne,
+} = require("../utils/CRUDController");
 
 /**
  * @description Get all products
@@ -11,24 +15,7 @@ const QueryFeatures = require("../utils/QueryFeatures");
  * @param {*} res
  * @returns [Products]
  */
-exports.getProducts = catchAsync(async (req, res) => {
-  // if you forgot `await` you will get error Converting circular structure to JSON
-  const productsQuery = Product.find();
-
-  const { mongooseQuery, pagination } = await new QueryFeatures(
-    productsQuery,
-    req.query
-  )
-    .search("name", "description")
-    .all();
-
-  // if you forgot `await` you will get error Converting circular structure to JSON
-  const products = await mongooseQuery;
-
-  return res
-    .status(200)
-    .json({ pagination, length: products?.length, data: products });
-});
+exports.getProducts = getAll(Product);
 
 /**
  * @description Get single product
@@ -38,13 +25,7 @@ exports.getProducts = catchAsync(async (req, res) => {
  * @param {*} res
  * @returns Product
  */
-exports.getProduct = async (req, res) => {
-  const product = await Product.findById(req.params.id);
-
-  return res.status(200).json({
-    data: product,
-  });
-};
+exports.getProduct = getOne(Product);
 
 /**
  * @description Create a new product
@@ -54,18 +35,7 @@ exports.getProduct = async (req, res) => {
  * @param {*} res
  * @returns
  */
-exports.createProduct = async (req, res, next) => {
-  // i do pre middleware to create slug, but sincide it is not exist in body, saving thorw an error! because slug is required!!
-  const newProduct = new Product(req.body);
-
-  try {
-    await newProduct.save();
-  } catch (error) {
-    return next(new ApiError(400, error.message));
-  }
-
-  return res.status(201).json(newProduct);
-};
+exports.createProduct = createOne(Product);
 
 /**
  * @description Update a product
@@ -75,19 +45,7 @@ exports.createProduct = async (req, res, next) => {
  * @param {*} res
  * @returns
  */
-exports.updateProduct = async (req, res) => {
-  const { id } = req.params;
-  const product = await Product.findByIdAndUpdate(
-    id,
-    { ...req.body, slug: "" },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-
-  return res.status(200).json(product);
-};
+exports.updateProduct = updateOne(Product);
 
 /**
  * @description Delete a product
@@ -97,8 +55,4 @@ exports.updateProduct = async (req, res) => {
  * @param {*} res
  * @returns
  */
-exports.deleteProduct = async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
-
-  return res.status(204).json({ data: null });
-};
+exports.deleteProduct = deleteOne(Product);

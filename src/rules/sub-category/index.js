@@ -20,7 +20,7 @@ exports.checkBodyDataRule = [
     .isLength({ max: 32 })
     .withMessage("name must be at most 32 chars"),
 
-  body("categoryId")
+  body("category")
     .notEmpty()
     .withMessage("categoryId is required!")
     .if((value) => !!value)

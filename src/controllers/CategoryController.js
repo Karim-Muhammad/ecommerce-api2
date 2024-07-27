@@ -1,10 +1,12 @@
-const asyncHandler = require("express-async-handler");
+const CategoryModel = require("../models/Category");
 
-const Category = require("../models/Category");
-
-const ApiError = require("../utils/ApiError");
-const catchAsync = require("../utils/catchAsync");
-const QueryFeatures = require("../utils/QueryFeatures");
+const {
+  deleteOne,
+  getOne,
+  getAll,
+  createOne,
+  updateOne,
+} = require("../utils/CRUDController");
 
 /**
  * @description Create a new category
@@ -12,26 +14,7 @@ const QueryFeatures = require("../utils/QueryFeatures");
  * @access Private/Admin
  * @request_body { name: "Category Name", description: "Category Description" }
  */
-exports.createCategory = async (req, res, next) => {
-  // if we removed `catchAsync` throwing error will crash the app (if express version <5).
-  // if Express version >=5, it (throwing error) will be passed to next automatically (for `async` route handlers).
-  const newCategory = new Category(req.body);
-
-  try {
-    await newCategory.save();
-    // we can put it outside try..catch, and express will catch any rejected
-    // promise and pass it to next(error) and it will be handled by error handler middleware
-    // but we want to customize the error message, so we will use `throw` to throw the user-defined error
-
-    res.status(201).json(newCategory);
-  } catch (error) {
-    // sometimes error should be 500 if there is error in code, or 400 if there is error in user input
-    // we can remove this catch. and it will handle the message of error
-    // BUT the status code will be 500, because it is handled by catchAsync
-
-    throw ApiError.badRequest(error.message);
-  }
-};
+exports.createCategory = createOne(CategoryModel);
 
 /**
  * @description Get all categories
@@ -39,19 +22,7 @@ exports.createCategory = async (req, res, next) => {
  * @access Public
  * @request_body { }
  */
-exports.getCategories = async (req, res, next) => {
-  const categoryQuery = Category.find({});
-  const { mongooseQuery, pagination } = await new QueryFeatures(
-    categoryQuery,
-    req.query
-  ).all();
-
-  const categories = await mongooseQuery;
-
-  return res
-    .status(200)
-    .json({ pagination, length: categories.length, data: categories });
-};
+exports.getCategories = getAll(CategoryModel);
 
 /**
  * @description Get single category
@@ -59,13 +30,7 @@ exports.getCategories = async (req, res, next) => {
  * @access Public
  * @request_body { }
  */
-exports.getCategory = async (req, res) => {
-  const category = await Category.findById(req.params.id);
-
-  res.status(200).json({
-    data: category,
-  });
-};
+exports.getCategory = getOne(CategoryModel);
 
 /**
  * @description Update single category
@@ -73,26 +38,7 @@ exports.getCategory = async (req, res) => {
  * @access Private/Admin
  * @request_body { name: "Category Name", description?: "Category Description" }
  */
-exports.updateCategory = catchAsync(async (req, res, next) => {
-  let category;
-
-  try {
-    category = await Category.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-  } catch (error) {
-    return next(ApiError.badRequest(error.message));
-  }
-
-  if (!category) {
-    return next(ApiError.notFound("Category you try to update is not found!"));
-  }
-
-  return res.status(200).json({
-    data: category,
-  });
-});
+exports.updateCategory = updateOne(CategoryModel);
 
 /**
  * @description Delete single category
@@ -100,8 +46,4 @@ exports.updateCategory = catchAsync(async (req, res, next) => {
  * @access Private/Admin
  * @request_body { }
  */
-exports.deleteCategory = asyncHandler(async (req, res, next) => {
-  await Category.findByIdAndDelete(req.params.id);
-
-  res.status(204).json({ data: null });
-});
+exports.deleteCategory = deleteOne(CategoryModel);

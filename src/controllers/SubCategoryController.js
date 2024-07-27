@@ -1,7 +1,14 @@
-const ApiError = require("../utils/ApiError");
 const SubCategory = require("../models/SubCategory");
-const catchAsync = require("../utils/catchAsync"); // created by me
+
 const QueryFeatures = require("../utils/QueryFeatures");
+
+const {
+  getOne,
+  deleteOne,
+  createOne,
+  updateOne,
+  getAll,
+} = require("../utils/CRUDController");
 
 /**
  * @description Create a new sub category
@@ -9,20 +16,7 @@ const QueryFeatures = require("../utils/QueryFeatures");
  * @access Private/Admin
  */
 
-exports.createSubCategory = catchAsync(async (req, res, next) => {
-  const { name, categoryId } = req.body;
-
-  // nested route
-
-  const newSubCategory = await SubCategory.create({
-    name,
-    category: categoryId,
-  });
-
-  res.status(201).json({
-    data: newSubCategory,
-  });
-});
+exports.createSubCategory = createOne(SubCategory);
 
 /**
  * @description Get all sub categories
@@ -35,23 +29,7 @@ exports.getAllSubCategories = async (req, res, next) => {
   const filter = {};
   if (req.params.categoryId) filter.category = req.params.categoryId;
 
-  const subCategoriesQuery = SubCategory.find(filter).populate({
-    path: "category",
-    select: "name -_id", // to exclude _id from the result
-  });
-
-  const { mongooseQuery, pagination } = await new QueryFeatures(
-    subCategoriesQuery,
-    req.query
-  ).all();
-
-  const subCategories = await mongooseQuery;
-
-  res.status(200).json({
-    pagination,
-    length: subCategories.length,
-    data: subCategories,
-  });
+  return await getAll(SubCategory)(req, res, next, filter);
 };
 
 /**
@@ -59,46 +37,18 @@ exports.getAllSubCategories = async (req, res, next) => {
  * @route GET /api/v1/sub-categories/:id
  * @access Public
  */
-exports.getSubCategory = async (req, res) => {
-  const category = await SubCategory.findById(req.params.id);
-
-  return res.status(200).json({
-    data: category,
-  });
-};
+exports.getSubCategory = getOne(SubCategory);
 
 /**
  * @description Update a sub-category
  * @route PATCH /api/v1/sub-categories/:id
  * @access Private/Admin
  */
-exports.updateSubCategory = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-
-  if (req.body.categoryId) {
-    req.body.category = req.body.categoryId;
-  }
-
-  const updatedSubCategory = await SubCategory.findOneAndUpdate(
-    { _id: id },
-    req.body,
-    { new: true }
-  );
-
-  res.status(200).json({
-    data: updatedSubCategory,
-  });
-});
+exports.updateSubCategory = updateOne(SubCategory);
 
 /**
  * @description Delete a sub-category
  * @route DELETE /api/v1/sub-categories/:id
  * @access Private/Admin
  */
-exports.deleteSubCategory = catchAsync(async (req, res, next) => {
-  await SubCategory.findByIdAndDelete(req.params.id);
-
-  res.status(204).json({
-    data: null,
-  });
-});
+exports.deleteSubCategory = deleteOne(SubCategory);

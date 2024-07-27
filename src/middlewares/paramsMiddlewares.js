@@ -24,7 +24,7 @@ exports.ensureIdRelatedToCategory = catchAsync(async (req, res, next) => {
  */
 exports.setCategoryIdToBody = (req, res, next) => {
   if (req.params.categoryId) {
-    req.body.categoryId = req.params.categoryId;
+    req.body.category = req.params.categoryId;
   }
 
   next();

@@ -9,6 +9,8 @@ CategorySchema.pre("save", function (next) {
 
 // findOneAndUpdate !== findByIdAndUpdate
 CategorySchema.pre("findOneAndUpdate", function (next) {
+  console.log("[FindOneAndUpdate]", this._update);
+
   if (this._update.name)
     this._update.slug = slugify(this._update.name, { lower: true });
   next(); // without this, it will hang (won't save)

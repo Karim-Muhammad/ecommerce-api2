@@ -11,7 +11,8 @@ SubCategorySchema.pre("findOneAndUpdate", function (next) {
   // before update, all your updates will be stored in this._update
   // then mongoose will apply these updates to the document
   // but we modify it before it's applied
-  this._update.slug = slugify(this._update.name, { lower: true });
+  if (this._update.name)
+    this._update.slug = slugify(this._update.name, { lower: true });
   next();
 });
 
