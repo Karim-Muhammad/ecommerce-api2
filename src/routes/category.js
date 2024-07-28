@@ -8,7 +8,6 @@
  */
 
 const express = require("express");
-
 const router = express.Router();
 
 const CategoryModel = require("../models/Category");
@@ -26,8 +25,16 @@ const {
   isIdMongoIdExistsRule,
   ensureIdMongoIdRule,
 } = require("../rules/shared");
+const { uploadFileMiddleware } = require("../middlewares/uploadFileMiddleware");
 
-router.route("/").get(getCategories).post(createCategoryRule, createCategory);
+router
+  .route("/")
+  .get(getCategories)
+  .post(
+    ...uploadFileMiddleware("category", "image"),
+    createCategoryRule,
+    createCategory
+  );
 
 router
   .route("/:id")

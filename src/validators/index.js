@@ -4,6 +4,7 @@ const ApiError = require("../utils/ApiError");
 exports.doValidate = (req, res, next) => {
   console.log("~~~~~~~~~~~~~~~~~~~~ doValidate ~~~~~~~~~~~~~~~~~~~~");
   const errors = validationResult(req);
+  console.log(req.body);
 
   if (!errors.isEmpty()) {
     return next(new ApiError(400, errors.array()));

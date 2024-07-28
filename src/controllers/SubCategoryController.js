@@ -1,7 +1,5 @@
 const SubCategory = require("../models/SubCategory");
 
-const QueryFeatures = require("../utils/QueryFeatures");
-
 const {
   getOne,
   deleteOne,

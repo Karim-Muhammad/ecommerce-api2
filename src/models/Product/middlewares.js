@@ -7,6 +7,16 @@ ProductSchema.pre("save", function (next) {
   next();
 });
 
+// Middleware pre any method that starts with `find`
+ProductSchema.pre(/^find/g, function (next) {
+  this.populate({
+    path: "category",
+    select: "name -_id",
+  });
+
+  next();
+});
+
 ProductSchema.pre("findOneAndUpdate", function (next) {
   console.log("PRE MIDDLEWARE", this._update);
   if (this._update.name)

@@ -1,5 +1,6 @@
 const developmentErrorHandler = (err, _req, res, _next) => {
   // console.log(err);
+  console.log(err);
   res.status(err.statusCode).json({
     error: {
       ...err,
@@ -12,7 +13,7 @@ const developmentErrorHandler = (err, _req, res, _next) => {
 };
 
 const productionErrorHandler = (err, _req, res, _next) => {
-  res.status(err.statusCode).json({
+  res.status(err?.statusCode).json({
     error: {
       status: err.statusCode,
       message: err.message,
