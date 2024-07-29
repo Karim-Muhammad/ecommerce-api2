@@ -6,10 +6,10 @@ const qs = require("qs");
 const morgan = require("morgan");
 
 require("dotenv").config();
+// load env variables `node v21.0.0` or higher by using loadEnv function in core node module
 
 // Configuration file
 const config = require("./config");
-// load env variables `node v21.0.0` or higher by using loadEnv function in core node module
 
 // Set up Database
 const setupConnection = require("./src/utils/setup-connection-db");
@@ -26,6 +26,7 @@ app.set("query parser", (str) => qs.parse(str));
 
 // Configurations
 // app.use("json spaces", 2);
+app.use(express.static(`${__dirname}/storage`));
 
 // Parse Body of JSON request
 app.use(express.json());

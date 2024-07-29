@@ -1,7 +1,22 @@
+// Middleware | Hooks
 const slugify = require("slugify");
 const CategorySchema = require("./schema");
 
-// Middleware | Hooks
+// ========================= MIDDLEWARES for IMAGES =========================
+// [`init` hook](https://mongoosejs.com/docs/api/document.html#Document.prototype.init())
+CategorySchema.post("init", function (doc) {
+  if (!doc.image) return;
+
+  doc.image = `${process.env.BASE_URL}/category/${doc.image}`;
+});
+
+CategorySchema.post("save", function (doc) {
+  if (!doc.image) return;
+
+  doc.image = `${process.env.BASE_URL}/category/${doc.image}`;
+});
+
+// ========================= MIDDLEWARES for SLUG =========================
 CategorySchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   next(); // without this, it will hang (won't save)

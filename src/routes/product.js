@@ -3,16 +3,18 @@ const { Router } = require("express");
 const ProductController = require("../controllers/ProductController");
 
 const {
+  ensureIdMongoIdRule,
+  isIdMongoIdExistsRule,
+} = require("../rules/shared");
+
+const {
   validateBodyRequest,
   validateBodyUpdateRequest,
 } = require("../rules/product");
 
-const {
-  ensureIdMongoIdRule,
-  isIdMongoIdExistsRule,
-} = require("../rules/shared");
-const Product = require("../models/Product");
 const { uploadFileMiddleware } = require("../middlewares/uploadFileMiddleware");
+
+const Product = require("../models/Product");
 
 const router = Router();
 
@@ -20,7 +22,7 @@ router
   .route("/")
   .get(ProductController.getProducts)
   .post(
-    ...uploadFileMiddleware("product", "imageCover"),
+    ...uploadFileMiddleware("product", { imageCover: 1 }),
     validateBodyRequest,
     ProductController.createProduct
   );
@@ -33,6 +35,7 @@ router
   .all(ensureIdMongoIdRule(Product), isIdMongoIdExistsRule(Product))
   .get(ProductController.getProduct)
   .patch(
+    ...uploadFileMiddleware("product", { imageCover: 1 }),
     validateBodyUpdateRequest,
     // Subcategory is optional, we may do it later
     ProductController.updateProduct

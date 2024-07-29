@@ -1,23 +1,46 @@
-const { Storage } = require("../services/storage");
+const storage = require("../services/storage");
 
-const storage = new Storage();
+const { prepareImageFields } = require("../helpers/upload-images");
 
-const diskStorage = storage.generateMemoryStorage();
-const upload = storage.uploadMiddleware(diskStorage);
+const memoryStorage = storage.generateMemoryStorage();
 
-exports.uploadFileMiddleware = (model, field) => [
-  upload.single(field),
-  async (req, res, next) => {
-    if (!req.file) {
-      return res.status(400).json({
-        error: "Please upload a file",
-      });
-    }
+const upload = storage.uploadMiddleware(memoryStorage);
 
-    const filename = await storage.uploadFileFromMemoryTo(model, req.file);
+/**
+ * @description Upload file middleware to upload file and save it in req.body.
+ * @param {*} model /subFolder The model name that need to upload file to (category, product, brand, etc...).
+ * @param {*} fields The fields that model has in its schema and need to be uploaded to.
+ * @returns
+ */
+exports.uploadFileMiddleware = (model, fields) => {
+  fields = prepareImageFields(fields);
 
-    req.body[field] = filename;
+  const prepareUploadMiddleware = upload.fields(fields);
 
-    next();
-  },
-];
+  return [
+    prepareUploadMiddleware,
+    async (req, res, next) => {
+      try {
+        const fieldNames = Object.keys(req.files); // image, coverImage, etc...
+
+        if (!fieldNames.length) {
+          throw new Error("No files uploaded.");
+        }
+
+        // Loop through only the fields that i registered in route, not all images uploaded.
+        fields.forEach(async ({ name: fieldName }) => {
+          const file = req.files[fieldName][0];
+
+          const filename = await storage.uploadFileFromMemoryTo(model, file);
+
+          req.body[fieldName] = filename;
+
+          next();
+        });
+      } catch (error) {
+        // next(error); // validate image early [OK]
+        next(); // [OK]
+      }
+    },
+  ];
+};

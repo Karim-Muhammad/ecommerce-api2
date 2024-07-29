@@ -7,10 +7,13 @@
  * we can validate it before we send it to the database. (this is the best practice)
  */
 
-const express = require("express");
-const router = express.Router();
+const { Router } = require("express");
 
-const CategoryModel = require("../models/Category");
+const {
+  isIdMongoIdExistsRule,
+  ensureIdMongoIdRule,
+} = require("../rules/shared");
+
 const {
   createCategory,
   getCategories,
@@ -21,17 +24,17 @@ const {
 
 const { createCategoryRule, updateCategoryRule } = require("../rules/category");
 
-const {
-  isIdMongoIdExistsRule,
-  ensureIdMongoIdRule,
-} = require("../rules/shared");
 const { uploadFileMiddleware } = require("../middlewares/uploadFileMiddleware");
+
+const CategoryModel = require("../models/Category");
+
+const router = Router();
 
 router
   .route("/")
   .get(getCategories)
   .post(
-    ...uploadFileMiddleware("category", "image"),
+    ...uploadFileMiddleware("category", { image: 1 }),
     createCategoryRule,
     createCategory
   );
@@ -40,9 +43,13 @@ router
   .route("/:id")
   .all(ensureIdMongoIdRule(CategoryModel), isIdMongoIdExistsRule(CategoryModel))
   .get(getCategory)
-  .patch(updateCategoryRule, updateCategory)
+  .patch(
+    ...uploadFileMiddleware("category", { image: 1 }),
+    updateCategoryRule,
+    updateCategory
+  )
   .delete(deleteCategory);
 
 router.use("/:categoryId/sub-categories", require("./sub-category"));
-// router.use("/:id/products", require("./product"));
+
 module.exports = router;

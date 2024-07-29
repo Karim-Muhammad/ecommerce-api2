@@ -16,13 +16,18 @@ const {
   ensureIdMongoIdRule,
   isIdMongoIdExistsRule,
 } = require("../rules/shared");
+const { uploadFileMiddleware } = require("../middlewares/uploadFileMiddleware");
 
 // =================== [ROUTES] ===================
 const router = Router();
 
 router
   .route("/")
-  .post(checkBrandBodyRule, BrandController.createBrand)
+  .post(
+    ...uploadFileMiddleware("brand", { image: 1 }),
+    checkBrandBodyRule,
+    BrandController.createBrand
+  )
   .get(BrandController.getBrands);
 
 router

@@ -1,19 +1,25 @@
 const slugify = require("slugify");
 const ProductSchema = require("./schema");
 
+// ========================= MIDDLEWARES for IMAGES =========================
+// find* these returns document from db, so it trigger init hook.
+// create will not.
+ProductSchema.post("init", function (doc) {
+  if (!doc.imageCover) return;
+
+  doc.imageCover = `${process.env.BASE_URL}/product/${doc.imageCover}`;
+});
+
+ProductSchema.post("save", function (doc) {
+  if (!doc.imageCover) return;
+
+  doc.imageCover = `${process.env.BASE_URL}/product/${doc.imageCover}`;
+});
+
+// ========================= MIDDLEWARES for SLUG =========================
 ProductSchema.pre("save", function (next) {
   console.log("PRE MIDDLEWARE SAVE", this.name);
   this.slug = slugify(this.name, { lower: true });
-  next();
-});
-
-// Middleware pre any method that starts with `find`
-ProductSchema.pre(/^find/g, function (next) {
-  this.populate({
-    path: "category",
-    select: "name -_id",
-  });
-
   next();
 });
 
@@ -28,5 +34,16 @@ ProductSchema.pre("findOneAndUpdate", function (next) {
 
   // so that we have to add slug to body of request
   // {...req.body, slug: ""}
+  next();
+});
+
+// ========================= MIDDLEWARES for POPULATE =========================
+// Middleware pre any method that starts with `find`
+ProductSchema.pre(/^find/g, function (next) {
+  this.populate({
+    path: "category",
+    select: "name -_id",
+  });
+
   next();
 });

@@ -48,6 +48,11 @@ const CategorySchema = new mongoose.Schema(
 
       // unique: true, // name is unique so slug will be unique
     },
+
+    image: {
+      type: String,
+      required: [true, "You must upload `image` for category"],
+    },
   },
   { timestamps: true }
 );

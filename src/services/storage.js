@@ -1,7 +1,8 @@
 const multer = require("multer");
-const uuid = require("uuid");
-const ApiError = require("../utils/ApiError");
 const sharp = require("sharp");
+const uuid = require("uuid");
+
+const ApiError = require("../utils/ApiError");
 
 class Storage {
   constructor() {
@@ -13,7 +14,7 @@ class Storage {
    * @returns
    */
   generateFileName(file) {
-    return `${uuid.v4()}-${file.originalname}-${Date.now()}`;
+    return `${file.originalname}-${uuid.v4()}-${Date.now()}`;
   }
 
   /**
@@ -22,36 +23,35 @@ class Storage {
    * returns filename
    */
   generateFileWithExtension(file, extention = "") {
-    const ext = extention ? extention : file.mimetype.split("/")[1];
+    const ext = extention || file.mimetype.split("/")[1];
 
     return `${this.generateFileName(file)}.${ext}`;
   }
 
   /**
-   * @param {*} suffix must start with `/` (folder for categories, brands, etc...)
+   * @param {*} subFolder must start with `/` (folder for categories, brands, etc...)
    * @returns
    */
-  storagePath(suffix = "") {
-    return `${this.storage_path}` + suffix;
+  storagePath(subFolder = "") {
+    return `${this.storage_path}${subFolder}`;
   }
 
   /**
-   * @param { } sub_folder specify the type of the file (e.g. `category`, `brand`, etc...) to create sub-folder for it
+   * @param { } subFolder specify the type of the file (e.g. `category`, `brand`, etc...) to create sub-folder for it
    * @returns
    */
-  generateDiskStorage(sub_folder) {
+  generateDiskStorage(subFolder) {
     return multer.diskStorage({
       destination: function (_req, _file, cb) {
-        cb(null, `${this.storagePath(sub_folder)}`);
+        cb(null, `${this.storagePath(subFolder)}`);
       },
 
       filename: function (_req, file, cb) {
-        console.log(file);
         try {
-          const filename = `${sub_folder}-${this.generateFileWithExtension(file)}`;
+          const filename = `${subFolder}-${this.generateFileWithExtension(file)}`;
           cb(null, filename);
         } catch (er) {
-          cb(er);
+          cb(er, false);
         }
       },
     });
@@ -62,6 +62,25 @@ class Storage {
    */
   generateMemoryStorage() {
     return multer.memoryStorage();
+  }
+
+  /**
+   * @param {*} subFolder (category, product, brand, etc...)
+   * @param {*} file multer.File
+   * @returns filename
+   */
+  async uploadFileFromMemoryTo(subFolder, file) {
+    const { buffer } = file;
+
+    const filename = this.generateFileWithExtension(file, "jpeg");
+
+    await sharp(buffer)
+      .resize({ width: 600, height: 400 })
+      .toFormat("jpeg")
+      .jpeg({ quality: 90 })
+      .toFile(`${this.storagePath(`/${subFolder}/${filename}`)}`);
+
+    return filename;
   }
 
   filterByMimeType(mimetype) {
@@ -84,24 +103,6 @@ class Storage {
       fileFilter: this.filterByMimeType("image"),
     });
   }
-
-  /**
-   * @param {*} sub_folder (category, product, brand, etc...)
-   * @param {*} file multer.File
-   * @returns filename
-   */
-  async uploadFileFromMemoryTo(sub_folder, file) {
-    const buffer = file.buffer;
-    const filename = this.generateFileWithExtension(file, "jpeg");
-
-    await sharp(buffer)
-      .resize({ width: 600, height: 400 })
-      .toFormat("jpeg")
-      .jpeg({ quality: 90 })
-      .toFile(`${this.storagePath(`/${sub_folder}`)}/${filename}`);
-
-    return filename;
-  }
 }
 
-exports.Storage = Storage;
+module.exports = new Storage();

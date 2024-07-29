@@ -29,6 +29,8 @@ exports.createCategoryRule = [
     .isIn(["active", "inactive"])
     .withMessage("Category 'status' must be either 'active' or 'inactive'."),
 
+  body("image").notEmpty().withMessage("Category 'image' must be filled!"),
+
   // 2) Validate
   doValidate,
 ];
