@@ -22,7 +22,7 @@ router
   .route("/")
   .get(ProductController.getProducts)
   .post(
-    ...uploadFileMiddleware("product", { imageCover: 1 }),
+    ...uploadFileMiddleware("product", { imageCover: 1, images: 4 }),
     validateBodyRequest,
     ProductController.createProduct
   );

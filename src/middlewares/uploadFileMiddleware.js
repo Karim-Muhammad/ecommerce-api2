@@ -23,17 +23,27 @@ exports.uploadFileMiddleware = (model, fields) => {
       try {
         const fieldNames = Object.keys(req.files); // image, coverImage, etc...
 
+        console.log("FILES", req.files);
+
         if (!fieldNames.length) {
           throw new Error("No files uploaded.");
         }
 
         // Loop through only the fields that i registered in route, not all images uploaded.
         fields.forEach(async ({ name: fieldName }) => {
-          const file = req.files[fieldName][0];
+          const field = req.files[fieldName];
 
-          const filename = await storage.uploadFileFromMemoryTo(model, file);
+          const filePromises = field.map(async (file) => {
+            const filename = await storage.uploadFileFromMemoryTo(model, file);
 
-          req.body[fieldName] = filename;
+            return filename;
+          });
+
+          req.body[fieldName] = await Promise.all(filePromises);
+          req.body[fieldName] =
+            req.body[fieldName].length === 1
+              ? req.body[fieldName][0]
+              : req.body[fieldName];
 
           next();
         });
