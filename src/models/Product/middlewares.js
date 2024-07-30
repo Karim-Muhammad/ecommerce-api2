@@ -4,13 +4,13 @@ const ProductSchema = require("./schema");
 // ========================= MIDDLEWARES for IMAGES =========================
 // find* these returns document from db, so it trigger init hook.
 // create will not.
-ProductSchema.post("init", function (doc) {
+ProductSchema.post("init", (doc) => {
   if (!doc.imageCover) return;
 
   doc.imageCover = `${process.env.BASE_URL}/product/${doc.imageCover}`;
 });
 
-ProductSchema.post("save", function (doc) {
+ProductSchema.post("save", (doc) => {
   if (!doc.imageCover) return;
 
   doc.imageCover = `${process.env.BASE_URL}/product/${doc.imageCover}`;
@@ -18,8 +18,10 @@ ProductSchema.post("save", function (doc) {
 
 // ========================= MIDDLEWARES for SLUG =========================
 ProductSchema.pre("save", function (next) {
-  console.log("PRE MIDDLEWARE SAVE", this.name);
+  console.log("PRE MIDDLEWARE SAVE", this);
+
   this.slug = slugify(this.name, { lower: true });
+
   next();
 });
 

@@ -6,7 +6,7 @@ const BrandSchema = new Schema({
     required: true,
     unique: true,
     trim: true,
-    minlength: [5, "Too short category {PATH}, min is {VALUE}"],
+    minlength: [3, "Too short category {PATH}, min is {VALUE}"],
     maxlength: [32, "Too long category {PATH}, max is {VALUE}"],
   },
 

@@ -12,8 +12,10 @@ const upload = storage.uploadMiddleware(memoryStorage);
  * @param {*} fields The fields that model has in its schema and need to be uploaded to.
  * @returns
  */
-exports.uploadFileMiddleware = (model, fields) => {
+exports.uploadFileMiddleware = (model, fields, options = {}) => {
   fields = prepareImageFields(fields);
+
+  console.log("Fields", fields);
 
   const prepareUploadMiddleware = upload.fields(fields);
 
@@ -21,35 +23,44 @@ exports.uploadFileMiddleware = (model, fields) => {
     prepareUploadMiddleware,
     async (req, res, next) => {
       try {
-        const fieldNames = Object.keys(req.files); // image, coverImage, etc...
+        const fieldNames = Object.keys(req.files); // image, imageCover, etc...
 
-        console.log("FILES", req.files);
+        console.log("Field names", fieldNames);
 
         if (!fieldNames.length) {
+          console.log("No files uploaded.");
           throw new Error("No files uploaded.");
         }
 
         // Loop through only the fields that i registered in route, not all images uploaded.
-        fields.forEach(async ({ name: fieldName }) => {
+        const fieldsUploadPromises = fields.map(async ({ name: fieldName }) => {
           const field = req.files[fieldName];
 
-          const filePromises = field.map(async (file) => {
-            const filename = await storage.uploadFileFromMemoryTo(model, file);
+          if (!field) return;
+
+          const filePromises = field?.map(async (file) => {
+            options = options[fieldName] || {};
+
+            const filename = await storage.uploadFileFromMemoryTo(
+              model,
+              file,
+              options
+            );
 
             return filename;
           });
 
-          req.body[fieldName] = await Promise.all(filePromises);
-          req.body[fieldName] =
-            req.body[fieldName].length === 1
-              ? req.body[fieldName][0]
-              : req.body[fieldName];
+          const filenames = await Promise.all(filePromises);
 
-          next();
+          req.body[fieldName] =
+            filenames.length === 1 ? filenames.join("") : filenames;
         });
+
+        await Promise.all(fieldsUploadPromises);
+        return next();
       } catch (error) {
         // next(error); // validate image early [OK]
-        next(); // [OK]
+        return next(); // [OK]
       }
     },
   ];

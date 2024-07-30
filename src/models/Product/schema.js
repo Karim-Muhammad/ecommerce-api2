@@ -70,7 +70,7 @@ const Product = new Schema(
 
     imageCover: {
       type: String,
-      required: [true, "Product image cover is required"],
+      required: [true, "Product `image` cover is required"],
     },
 
     images: [String],

@@ -7,6 +7,12 @@ const ApiError = require("../utils/ApiError");
 class Storage {
   constructor() {
     this.storage_path = "src/storage";
+    this.DEFAULT_SHARP_OPTIONS = {
+      width: 600,
+      height: 400,
+      quality: 90,
+      format: "jpeg",
+    };
   }
 
   /**
@@ -69,15 +75,21 @@ class Storage {
    * @param {*} file multer.File
    * @returns filename
    */
-  async uploadFileFromMemoryTo(subFolder, file) {
+  async uploadFileFromMemoryTo(
+    subFolder,
+    file,
+    options = this.DEFAULT_SHARP_OPTIONS
+  ) {
+    options = { ...this.DEFAULT_SHARP_OPTIONS, ...options };
+
     const { buffer } = file;
 
     const filename = this.generateFileWithExtension(file, "jpeg");
 
     await sharp(buffer)
-      .resize({ width: 600, height: 400 })
-      .toFormat("jpeg")
-      .jpeg({ quality: 90 })
+      .resize({ width: options.width, height: options.height })
+      .toFormat(options.format)
+      .jpeg({ quality: options.quality })
       .toFile(`${this.storagePath(`/${subFolder}/${filename}`)}`);
 
     return filename;

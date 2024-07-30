@@ -22,7 +22,11 @@ router
   .route("/")
   .get(ProductController.getProducts)
   .post(
-    ...uploadFileMiddleware("product", { imageCover: 1, images: 4 }),
+    ...uploadFileMiddleware("product", {
+      imageCover: 1,
+      images: 4,
+    }),
+
     validateBodyRequest,
     ProductController.createProduct
   );
@@ -35,7 +39,10 @@ router
   .all(ensureIdMongoIdRule(Product), isIdMongoIdExistsRule(Product))
   .get(ProductController.getProduct)
   .patch(
-    ...uploadFileMiddleware("product", { imageCover: 1 }),
+    ...uploadFileMiddleware("product", {
+      imageCover: 1,
+      images: 4,
+    }),
     validateBodyUpdateRequest,
     // Subcategory is optional, we may do it later
     ProductController.updateProduct

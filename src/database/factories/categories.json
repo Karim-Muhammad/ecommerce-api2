@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Mobiles",
+    "description": "All Mobile products which are available in our store.",
+    "status": "active",
+    "slug": "mobiles"
+  },
+  {
+    "name": "Laptops2",
+    "description": "All Laptop products which are available in our store.",
+    "status": "active",
+    "slug": "laptops2"
+  },
+  {
+    "name": "Tablets",
+    "description": "All Tablet products which are available in our store.",
+    "status": "active",
+    "slug": "tablets"
+  },
+  {
+    "name": "Desktops",
+    "description": "All Desktop products which are available in our store.",
+    "status": "active",
+    "slug": "desktops"
+  },
+  {
+    "name": "Accessories",
+    "description": "All Accessories products which are available in our store.",
+    "status": "active",
+    "slug": "accessories"
+  },
+  {
+    "name": "Cameras",
+    "description": "All Camera products which are available in our store.",
+    "status": "active",
+    "slug": "cameras"
+  },
+  {
+    "name": "Printers2",
+    "description": "All Printer products which are available in our store.",
+    "status": "active",
+    "slug": "printers2"
+  },
+  {
+    "name": "Monitors",
+    "description": "All Monitor products which are available in our store.",
+    "status": "active",
+    "slug": "monitors"
+  },
+  {
+    "name": "Software",
+    "description": "All Software products which are available in our store.",
+    "status": "active",
+    "slug": "software"
+  },
+  {
+    "name": "Storage",
+    "description": "All Storage products which are available in our store.",
+    "status": "active",
+    "slug": "storage"
+  }
+]

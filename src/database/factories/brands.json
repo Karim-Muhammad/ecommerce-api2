@@ -1,0 +1,62 @@
+[
+  {
+    "name": "H&M",
+    "description": "All Kinds of Modern Fashion Clothes.",
+    "status": true,
+    "slug": "h&m"
+  },
+  {
+    "name": "Zara",
+    "description": "All Kinds of Modern Fashion Clothes.",
+    "status": true,
+    "slug": "zara"
+  },
+  {
+    "name": "Apple",
+    "description": "Apple Inc. is an American multinational technology company that specializes in consumer electronics, computer software, and online services.",
+    "status": true,
+    "slug": "apple"
+  },
+  {
+    "name": "Samsung",
+    "description": "Samsung Electronics Co., Ltd. is a South Korean multinational electronics company headquartered in the Yeongtong District of Suwon.",
+    "status": true,
+    "slug": "samsung"
+  },
+  {
+    "name": "Microsoft",
+    "description": "Microsoft Corporation is an American multinational technology company with headquarters in Redmond, Washington.",
+    "status": true,
+    "slug": "microsoft"
+  },
+  {
+    "name": "Google",
+    "description": "Google LLC is an American multinational technology company that specializes in Internet-related services and products.",
+    "status": true,
+    "slug": "google"
+  },
+  {
+    "name": "Amazon",
+    "description": "Amazon.com, Inc. is an American multinational technology company based in Seattle, Washington.",
+    "status": true,
+    "slug": "amazon"
+  },
+  {
+    "name": "Nike",
+    "description": "Nike, Inc. is an American multinational corporation that is engaged in the design, development, manufacturing, and worldwide marketing and sales of footwear, apparel, equipment, accessories, and services.",
+    "status": true,
+    "slug": "nike"
+  },
+  {
+    "name": "Adidas",
+    "description": "Adidas AG is a German multinational corporation, founded and headquartered in Herzogenaurach, Germany, that designs and manufactures shoes, clothing, and accessories.",
+    "status": true,
+    "slug": "adidas"
+  },
+  {
+    "name": "Puma",
+    "description": "Puma SE, branded as Puma, is a German multinational corporation that designs and manufactures athletic and casual footwear, apparel and accessories.",
+    "status": true,
+    "slug": "puma"
+  }
+]

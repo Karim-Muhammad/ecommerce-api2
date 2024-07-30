@@ -5,21 +5,21 @@ require("dotenv").config();
 const fs = require("fs");
 const colors = require("colors");
 
-const products = JSON.parse(
-  fs.readFileSync(`${process.cwd()}/src/database/factories/products.json`)
+const brands = JSON.parse(
+  fs.readFileSync(`${process.cwd()}/src/database/factories/brands.json`)
 );
 
-console.log(`${process.cwd()}/src/database/factories/products.json`);
+console.log(`${process.cwd()}/src/database/factories/brands.json`);
 
 const dbConnection = require(`../../utils/setup-connection-db`);
 
 dbConnection();
 
-const Product = require("../../models/Product");
+const Brand = require("../../models/Brand");
 
 const insertData = async () => {
   try {
-    await Product.insertMany(products);
+    await Brand.insertMany(brands);
     console.log(colors.green.inverse("Data inserted successfully"));
     process.exit(1);
   } catch (error) {
@@ -29,7 +29,7 @@ const insertData = async () => {
 
 const destroyData = async () => {
   try {
-    await Product.deleteMany();
+    await Brand.deleteMany();
     console.log(colors.red.inverse("Data destroyed successfully"));
     process.exit(1);
   } catch (error) {
