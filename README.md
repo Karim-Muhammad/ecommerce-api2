@@ -44,3 +44,7 @@ if async error occurs, app will crash
 if you use AsyncHandler, it will catch the error and pass it to the error handler middleware
 
 if you use catchAsync, it will catch the error and pass it to the error handler middleware
+
+---
+
+save images after validation (save file name in req.body but not saved in machine), another middleware after validation layer will save the image in the machine

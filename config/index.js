@@ -4,4 +4,6 @@ module.exports = {
   node_env: process.env.NODE_ENV || "development",
   atlas_uri: process.env.CONNECTION_STRING,
   home: process.env.HOME || "../",
+
+  secret_key: process.env.SECRET_KEY,
 };

@@ -47,8 +47,46 @@ class ApiError extends Error {
     return new ApiError(403, { message });
   }
 
-  static unauthorized(message = "Unauthorized") {
+  /**
+   * @description Check if the user is not authenticated
+   * @param {*} message
+   * @returns
+   */
+  static unauthenticated(message = "Unauthenticated") {
     return new ApiError(401, { message });
+  }
+
+  /**
+   * @description Check if the user is not authorized to access the resource
+   * @param {*} message
+   * @returns
+   */
+  static unauthorized(message = "Unauthorized") {
+    return new ApiError(403, { message });
+  }
+
+  /**
+   * @description Check if token is expired -> TokenExpiredError
+   * @param {*} message
+   * @returns
+   */
+  static webTokenExpired(message = "Web Token Expired") {
+    return new ApiError(401, { message });
+  }
+
+  /** [read](https://www.npmjs.com/package/jsonwebtoken#jsonwebtokenerror)
+   * @description Check if token is invalid (manipulated, changed, signture changed)
+   * wrong secret, wrong algorithm, etc -> JsonWebTokenError
+   * @returns
+   */
+  static webTokenInvalid(message = "Web Token Invalid") {
+    return new ApiError(401, { message });
+  }
+
+  static catchWebTokenError(error) {
+    if (error.name === "TokenExpiredError") return ApiError.webTokenExpired();
+    if (error.name === "JsonWebTokenError") return ApiError.webTokenInvalid();
+    return ApiError.unauthorized(error.message);
   }
 
   toJson() {

@@ -1,6 +1,5 @@
 const validator = require("express-validator");
 const ApiError = require("../../utils/ApiError");
-const Brand = require("../../models/Brand");
 const { doValidate } = require("../../validators");
 
 exports.ensureIdMongoIdRule = (Model) => [

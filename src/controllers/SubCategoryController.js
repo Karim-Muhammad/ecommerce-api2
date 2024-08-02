@@ -11,7 +11,7 @@ const {
 /**
  * @description Create a new sub category
  * @route POST /api/v1/sub-categories
- * @access Private/Admin
+ * @access Private/Admin/Manager
  */
 
 exports.createSubCategory = createOne(SubCategory);
@@ -40,7 +40,7 @@ exports.getSubCategory = getOne(SubCategory);
 /**
  * @description Update a sub-category
  * @route PATCH /api/v1/sub-categories/:id
- * @access Private/Admin
+ * @access Private/Admin/Manager
  */
 exports.updateSubCategory = updateOne(SubCategory);
 

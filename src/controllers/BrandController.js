@@ -11,7 +11,7 @@ const {
 /**
  * @description Create a new brand
  * @route POST /api/v1/brands
- * @access Private/Admin
+ * @access Private/Admin/Manager
  * @request_body { name: "Brand Name", description: "Brand Description", status: "active" }
  */
 exports.createBrand = createOne(Brand);
@@ -40,7 +40,7 @@ exports.getBrand = getOne(Brand);
 /**
  * @description Update single brand
  * @route PUT /api/v1/brands/:id
- * @access Private/Admin
+ * @access Private/Admin/Manager
  * @request_body { name: "Brand Name", description: "Brand Description", status: "active" }
  * @param { id } - Brand ID
  * @response { data: { brand } }

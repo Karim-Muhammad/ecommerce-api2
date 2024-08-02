@@ -11,7 +11,7 @@ const {
 /**
  * @description Create a new category
  * @route POST /api/v1/categories
- * @access Private/Admin
+ * @access Private/Admin/Manager
  * @request_body { name: "Category Name", description: "Category Description" }
  */
 exports.createCategory = createOne(CategoryModel);
@@ -35,7 +35,7 @@ exports.getCategory = getOne(CategoryModel);
 /**
  * @description Update single category
  * @route UPDATE /api/v1/categories/:id
- * @access Private/Admin
+ * @access Private/Admin/Manager
  * @request_body { name: "Category Name", description?: "Category Description" }
  */
 exports.updateCategory = updateOne(CategoryModel);

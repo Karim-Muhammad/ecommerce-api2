@@ -10,6 +10,12 @@
 const { Router } = require("express");
 
 const {
+  guarding,
+  guardingAdmin,
+  restrictTo,
+} = require("../middlewares/authenticationMiddlewares");
+
+const {
   isIdMongoIdExistsRule,
   ensureIdMongoIdRule,
 } = require("../rules/shared");
@@ -34,21 +40,26 @@ router
   .route("/")
   .get(getCategories)
   .post(
+    // guardingAdmin(),
+    restrictTo("user"),
     ...uploadFileMiddleware("category", { image: 1 }),
     createCategoryRule,
     createCategory
   );
+
+// router.use(restrictTo("admin"));
 
 router
   .route("/:id")
   .all(ensureIdMongoIdRule(CategoryModel), isIdMongoIdExistsRule(CategoryModel))
   .get(getCategory)
   .patch(
+    restrictTo("user"),
     ...uploadFileMiddleware("category", { image: 1 }),
     updateCategoryRule,
     updateCategory
   )
-  .delete(deleteCategory);
+  .delete(restrictTo("user"), deleteCategory);
 
 router.use("/:categoryId/sub-categories", require("./sub-category"));
 

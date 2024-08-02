@@ -15,8 +15,6 @@ const upload = storage.uploadMiddleware(memoryStorage);
 exports.uploadFileMiddleware = (model, fields, options = {}) => {
   fields = prepareImageFields(fields);
 
-  console.log("Fields", fields);
-
   const prepareUploadMiddleware = upload.fields(fields);
 
   return [
@@ -24,8 +22,6 @@ exports.uploadFileMiddleware = (model, fields, options = {}) => {
     async (req, res, next) => {
       try {
         const fieldNames = Object.keys(req.files); // image, imageCover, etc...
-
-        console.log("Field names", fieldNames);
 
         if (!fieldNames.length) {
           console.log("No files uploaded.");
