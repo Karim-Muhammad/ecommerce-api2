@@ -141,3 +141,37 @@ exports.resetPasswordRule = [
 
   doValidate,
 ];
+
+exports.changePasswordRule = [
+  body("currentPassword")
+    .notEmpty()
+    .withMessage("Current Password is required!")
+    .custom(async (value, { req }) => {
+      const { user } = req;
+
+      if (!(await bcrypt.compare(value, user.password)))
+        throw ApiError.badRequest("Current Password is Invalid!");
+
+      return true;
+    }),
+
+  body("newPassword")
+    .notEmpty()
+    .withMessage("New Password is required!")
+    .isLength({ min: 7 })
+    .withMessage("Password must has at least 7 characters."),
+
+  body("newPasswordConfirmation")
+    .notEmpty()
+    .withMessage("Password Confirmation is required.")
+    .custom((value, { req }) => {
+      console.log(value, req.body, value === req.body.newPassword);
+      if (value !== req.body.newPassword) {
+        throw ApiError.badRequest("Password is not matched.");
+      }
+
+      return true;
+    }),
+
+  doValidate,
+];

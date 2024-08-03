@@ -17,12 +17,17 @@ exports.dump = function (req, res, next) {
 
 /**
  * @description Preventing the user from sending the password field in the request
- * @param {*} fields
+ * @param {*} fields - fields to exclude from the request body
+ * @param {*} throwError - whether to throw an error or not
  * @returns
  */
-exports.excludeFromBody = function (fields) {
+exports.excludeFromBody = function (fields, throwError = false) {
   return function (req, res, next) {
     fields.forEach((field) => {
+      if (req.body[field] && throwError) {
+        throw ApiError.badRequest(`${field} cannot be updated here.`);
+      }
+
       delete req.body[field];
     });
 

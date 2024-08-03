@@ -6,6 +6,7 @@ const {
   forgotPasswordRule,
   verifyPasswordResetCodeRule,
   resetPasswordRule,
+  changePasswordRule,
 } = require("../rules/auth");
 
 const { AuthController } = require("../controllers/AuthController");
@@ -14,12 +15,46 @@ const {
   guarding,
   reverseGuarding,
 } = require("../middlewares/authenticationMiddlewares");
+const { uploadFileMiddleware } = require("../middlewares/uploadFileMiddleware");
+
+const { updateUserRule } = require("../rules/user");
+
+const { excludeFromBody } = require("../helpers");
 
 const router = Router();
 
+// [ME Account]
 router.get("/me", guarding(), AuthController.me());
-router.put("/update-profile", guarding(), AuthController.updateProfile());
-router.patch("/change-password", guarding(), AuthController.changePassword());
+
+// [UPDATE PROFILE]
+router.patch(
+  "/update-profile",
+  guarding(),
+  ...uploadFileMiddleware("user", { profileImage: 1 }),
+  excludeFromBody(["password", "role", "email"], true),
+  updateUserRule,
+  AuthController.updateProfile()
+);
+
+// [CHANGE PASSWORD]
+router.patch(
+  "/change-password",
+  guarding(),
+  changePasswordRule,
+  AuthController.changePassword()
+);
+
+// [DEACTIVATE ACCOUNT]
+router.post(
+  "/account/deactivate",
+  guarding(),
+  AuthController.deactivateAccount()
+);
+
+// [ACTIVATE ACCOUNT]
+router.post("/account/activate", guarding(), AuthController.activateAccount());
+
+// [SIGNOUT]
 router.post("/signout", guarding(), AuthController.signout());
 
 router.use(reverseGuarding());

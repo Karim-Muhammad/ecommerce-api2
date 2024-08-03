@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs");
+
 const sendEmail = require("../utils/send-emails");
 
 const ApiError = require("../utils/ApiError");
@@ -10,6 +12,7 @@ const {
 } = require("../helpers");
 
 const User = require("../models/User");
+const UserController = require("./UserController");
 
 /**
  * @class AuthController
@@ -19,6 +22,9 @@ const User = require("../models/User");
 class AuthController {
   /**
    * @description This method is used to register a new user
+   * @route /api/v1/auth/signup
+   * @access Public
+   * @type POST
    */
   signup() {
     return function (req, res, next) {
@@ -42,6 +48,9 @@ class AuthController {
 
   /**
    * @description This method is used to login a user
+   * @route /api/v1/auth/signin
+   * @access Public
+   * @type POST
    */
   signin() {
     return function (req, res, next) {
@@ -56,6 +65,9 @@ class AuthController {
   /**
    * @description This method is used to get the details of the logged in user
    * @returns
+   * @route /api/v1/auth/me
+   * @access Private
+   * @type GET
    */
   me() {
     return function (req, res, next) {
@@ -67,15 +79,61 @@ class AuthController {
   }
 
   /**
+   * [TODO]
    * @description This method is used to logout a user
+   * @route /api/v1/auth/signout
+   * @access Private
+   * @type POST
    */
   signout() {
     return function (req, res, next) {};
   }
 
   /**
+   * @description This method is used to deactivate account
+   * @route /api/v1/auth/account/deactivate
+   * @access Private
+   * @type POST
+   */
+  deactivateAccount() {
+    return async function (req, res, next) {
+      const { user } = req;
+      user.active = false;
+      await user.save();
+
+      return res.status(204).json({
+        status: "success",
+        message: "Account deactivated successfully!",
+      });
+    };
+  }
+
+  /**
+   * @description This method is used to activate account
+   * @route /api/v1/auth/account/activate
+   * @access Private
+   * @type POST
+   */
+  activateAccount() {
+    return async function (req, res, next) {
+      const { user } = req;
+
+      user.active = true;
+      await user.save();
+
+      res.status(200).json({
+        status: "success",
+        message: "Account activated successfully!",
+      });
+    };
+  }
+
+  /**
    * [1# FORGOT PASSWORD]
    * @description This method is used to get the ask for a password reset
+   * @route /api/v1/auth/forgot-password
+   * @access Public
+   * @type POST
    */
   forgotPassword() {
     return async function (req, res, next) {
@@ -165,6 +223,9 @@ class AuthController {
   /**
    * [2# VERIFY RESET CODE]
    * @description This method is used to verify the reset code which is sent to the user's email
+   * @route /api/v1/auth/verify-password-reset-code
+   * @access Public
+   * @type PATCH
    */
   verifyResetCode() {
     return async function (req, res, next) {
@@ -208,6 +269,9 @@ class AuthController {
   /**
    * [3# RESET NEW PASSWORD]
    * @description This method is used to reset the new password (only for UN-Authenticated users)
+   * @route /api/v1/auth/reset-password
+   * @access Public
+   * @type PATCH
    */
   resetPassword() {
     return async function (req, res, next) {
@@ -247,11 +311,46 @@ class AuthController {
   /**
    * [CHANGE LOGGED IN USER PASSWORD]
    * @description This method is used to change the password (only for Authenticated users)
+   * diffs between change password of logged user and admin change password of user is:
+   * 1) logged user will receive the token after changing the password (because the old token is no longer valid)
+   * 2) admin will not receive the token after changing the password (because the old token is still valid)
+   * @route /api/v1/auth/change-password
+   * @access Private
+   * @type PATCH
    */
   changePassword() {
-    return function (req, res, next) {};
+    return async function (req, res, next) {
+      const user = await User.findById(req.user.id);
+      const { newPassword } = req.body;
+
+      user.password = newPassword;
+      await user.save();
+
+      // 1) Generate the token, why? because the old token is no longer valid, because the password has been changed
+      const token = createToken({ id: user._id, role: user.role });
+
+      return res.status(200).json({
+        status: "success",
+        message: "Password changed successfully!",
+        token,
+      });
+    };
   }
 
+  /**
+   * @description This method is used to update the profile of the user
+   * @route /api/v1/auth/update-profile
+   * @access Private
+   * @type PATCH
+   */
+  updateProfile() {
+    return async function (req, res, next) {
+      req.params.id = req.user.id;
+      return await UserController.updateOne()(req, res, next);
+    };
+  }
+
+  // ======================== [TODO] ========================
   /**
    * [1# ASK EMAIL VERIFICATION]
    * @description This method is used to ask to verify the email
@@ -362,13 +461,6 @@ class AuthController {
    * @description This method is used to resend the email verification
    */
   resendEmailVerification() {
-    return function (req, res, next) {};
-  }
-
-  /**
-   * @description This method is used to update the profile of the user
-   */
-  updateProfile() {
     return function (req, res, next) {};
   }
 }

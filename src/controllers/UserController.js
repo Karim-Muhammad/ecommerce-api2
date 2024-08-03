@@ -63,6 +63,12 @@ class UserController {
     return deleteOne(this.model);
   }
 
+  /**
+   * @description Change Password of User
+   * @route PATCH /api/v1/users/:id/change-password
+   * @access Private (Admin only)
+   * @returns
+   */
   changePassword() {
     return async (req, res, next) => {
       const user = await User.findById(req.params.id).select("+password");
