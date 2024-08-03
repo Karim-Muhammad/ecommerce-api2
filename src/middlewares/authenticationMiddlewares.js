@@ -26,11 +26,12 @@ exports.guarding = function () {
     // 2) Verify Token (Check if token is valid - no changes or expired)
     try {
       const payload = verifyToken(token);
-      const user = await User.findById(payload.id);
-      console.log(payload, user);
 
       // 3) May admin remove this user which is currently loggin in
       // so even if token is valid and exist, user which belong may no longer exist!
+      const user = await User.findById(payload.id);
+      console.log("[Verified Token]", payload, user);
+
       if (!user) {
         return next(
           ApiError.unauthenticated("Un-Authenticated Access! (User not found)")
@@ -43,7 +44,7 @@ exports.guarding = function () {
         10
       );
 
-      console.log(passwordChangedAtInSec, payload.iat);
+      console.log("[Check]", passwordChangedAtInSec, payload.iat);
 
       if (passwordChangedAtInSec > payload.iat) {
         return next(

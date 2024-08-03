@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const ApiError = require("../utils/ApiError");
 const config = require("../../config");
@@ -42,12 +43,40 @@ exports.preventPasswordUpdate = function (req, res, next) {
   next();
 };
 
+/**
+ * @description function to create a token with the user payload
+ * @param {*} userPayload
+ * @returns
+ */
 exports.createToken = function (userPayload) {
   return jwt.sign(userPayload, config.secret_key, {
     expiresIn: "2h",
   });
 };
 
+/**
+ * @description function to extract the payload from the token
+ * @param {*} token
+ * @returns
+ */
 exports.verifyToken = function (token) {
   return jwt.verify(token, config.secret_key);
 };
+
+/**
+ * @description generate a random code of a given number of digits
+ * @param {*} numberOfDigits
+ * @returns
+ */
+exports.generateRandomCode = (numberOfDigits) =>
+  Math.floor(
+    10 ** (numberOfDigits - 1) + Math.random() * 10 ** (numberOfDigits - 1)
+  ).toString();
+
+/**
+ * @description hash a text once, `crypto` hash same text multiple times will return same hash all the time
+ * @param {*} text
+ * @returns
+ */
+exports.hashOnce = (text) =>
+  crypto.createHash("sha256").update(text).digest("hex");

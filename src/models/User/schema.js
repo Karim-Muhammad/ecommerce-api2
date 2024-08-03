@@ -25,6 +25,15 @@ const UserSchema = new Schema({
   },
   passwordChangedAt: Date,
 
+  // password reset
+  passwordResetToken: String,
+  passwordResetExpires: Date,
+  passwordResetVerified: Boolean,
+
+  // email verification
+  email_verified_at: Date,
+
+  // soft delele account
   deletedAt: Date,
 
   profileImage: String,

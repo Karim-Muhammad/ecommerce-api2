@@ -15,6 +15,7 @@ const {
 const { uploadFileMiddleware } = require("../middlewares/uploadFileMiddleware");
 
 const Product = require("../models/Product");
+const { restrictTo } = require("../middlewares/authenticationMiddlewares");
 
 const router = Router();
 
@@ -22,6 +23,7 @@ router
   .route("/")
   .get(ProductController.getProducts)
   .post(
+    restrictTo("admin", "manager"),
     ...uploadFileMiddleware("product", {
       imageCover: 1,
       images: 4,
@@ -39,6 +41,7 @@ router
   .all(ensureIdMongoIdRule(Product), isIdMongoIdExistsRule(Product))
   .get(ProductController.getProduct)
   .patch(
+    restrictTo("admin", "manager"),
     ...uploadFileMiddleware("product", {
       imageCover: 1,
       images: 4,
@@ -47,6 +50,6 @@ router
     // Subcategory is optional, we may do it later
     ProductController.updateProduct
   )
-  .delete(ProductController.deleteProduct);
+  .delete(restrictTo("admin", "manager"), ProductController.deleteProduct);
 
 module.exports = router;

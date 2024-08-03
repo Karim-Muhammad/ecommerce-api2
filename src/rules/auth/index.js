@@ -62,7 +62,7 @@ exports.signUpUserRule = [
   doValidate,
 ];
 
-exports.signIpUserRule = [
+exports.signInUserRule = [
   body("email")
     .notEmpty()
     .withMessage("Email is required.")
@@ -90,5 +90,54 @@ exports.signIpUserRule = [
 
       return true;
     }),
+  doValidate,
+];
+
+exports.forgotPasswordRule = [
+  body("email")
+    .notEmpty()
+    .withMessage("Email is required.")
+    .isEmail()
+    .withMessage("Email is invalid."),
+  doValidate,
+];
+
+exports.verifyPasswordResetCodeRule = [
+  body("resetCode")
+    .notEmpty()
+    .withMessage("Reset Code is required.")
+    .isLength({
+      min: 6,
+      max: 6,
+    })
+    .withMessage("Please enter a valid reset code."),
+
+  doValidate,
+];
+
+exports.resetPasswordRule = [
+  body("email")
+    .notEmpty()
+    .withMessage("Email is required.")
+    .isEmail()
+    .withMessage("Email is invalid!"),
+
+  body("password")
+    .notEmpty()
+    .withMessage("Password is required!")
+    .isLength({ min: 7 })
+    .withMessage("Password must has at least 7 characters."),
+
+  body("passwordConfirmation")
+    .notEmpty()
+    .withMessage("Password Confirmation is required.")
+    .custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw ApiError.badRequest("Password is not matched.");
+      }
+
+      return true;
+    }),
+
   doValidate,
 ];

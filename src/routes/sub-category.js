@@ -23,6 +23,7 @@ const {
   ensureIdMongoIdRule,
   isIdMongoIdExistsRule,
 } = require("../rules/shared");
+const { restrictTo } = require("../middlewares/authenticationMiddlewares");
 
 // handler can only access parameters of route related to
 // but cannot access parameters which outside of the route - [Learn more about mergeParams](https://expressjs.com/en/api.html#express.router)
@@ -31,7 +32,12 @@ const router = express.Router({ mergeParams: true });
 router
   .route("/")
   .get(getAllSubCategories)
-  .post(setCategoryIdToBody, checkBodyDataRule, createSubCategory);
+  .post(
+    restrictTo("admin", "manager"),
+    setCategoryIdToBody,
+    checkBodyDataRule,
+    createSubCategory
+  );
 
 router
   .route("/:id")
@@ -41,7 +47,12 @@ router
     ensureIdRelatedToCategory
   )
   .get(getSubCategory)
-  .patch(setCategoryIdToBody, checkBodyDataInUpdateRule, updateSubCategory)
-  .delete(deleteSubCategory);
+  .patch(
+    restrictTo("admin", "manager"),
+    setCategoryIdToBody,
+    checkBodyDataInUpdateRule,
+    updateSubCategory
+  )
+  .delete(restrictTo("admin", "manager"), deleteSubCategory);
 
 module.exports = router;

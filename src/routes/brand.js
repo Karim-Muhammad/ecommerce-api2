@@ -17,6 +17,7 @@ const {
   isIdMongoIdExistsRule,
 } = require("../rules/shared");
 const { uploadFileMiddleware } = require("../middlewares/uploadFileMiddleware");
+const { restrictTo } = require("../middlewares/authenticationMiddlewares");
 
 // =================== [ROUTES] ===================
 const router = Router();
@@ -24,6 +25,7 @@ const router = Router();
 router
   .route("/")
   .post(
+    restrictTo("admin", "manager"),
     ...uploadFileMiddleware("brand", { image: 1 }),
     checkBrandBodyRule,
     BrandController.createBrand
@@ -33,9 +35,13 @@ router
 router
   .route("/:id")
   .all(ensureIdMongoIdRule(Brand), isIdMongoIdExistsRule(Brand)) // you don't need to always check (!brand)
-  .patch(checkBrandBodyUpdateRule, BrandController.updateBrand)
+  .patch(
+    restrictTo("admin", "manager"),
+    checkBrandBodyUpdateRule,
+    BrandController.updateBrand
+  )
   .get(BrandController.getBrand)
-  .delete(BrandController.deleteBrand);
+  .delete(restrictTo("admin", "manager"), BrandController.deleteBrand);
 
 /**
  * checkBrandBodyRule before update not a little bit a problem

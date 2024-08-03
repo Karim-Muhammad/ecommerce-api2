@@ -41,7 +41,7 @@ router
   .get(getCategories)
   .post(
     // guardingAdmin(),
-    restrictTo("user"),
+    restrictTo("admin", "manager"),
     ...uploadFileMiddleware("category", { image: 1 }),
     createCategoryRule,
     createCategory
@@ -54,12 +54,12 @@ router
   .all(ensureIdMongoIdRule(CategoryModel), isIdMongoIdExistsRule(CategoryModel))
   .get(getCategory)
   .patch(
-    restrictTo("user"),
+    restrictTo("admin", "manager"),
     ...uploadFileMiddleware("category", { image: 1 }),
     updateCategoryRule,
     updateCategory
   )
-  .delete(restrictTo("user"), deleteCategory);
+  .delete(restrictTo("admin", "manager"), deleteCategory);
 
 router.use("/:categoryId/sub-categories", require("./sub-category"));
 

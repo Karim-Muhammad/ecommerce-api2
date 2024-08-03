@@ -41,6 +41,7 @@ app.use("/api/v1/brands", require("./src/routes/brand"));
 app.use("/api/v1/products", require("./src/routes/product"));
 app.use("/api/v1/users", require("./src/routes/user"));
 app.use("/api/v1/auth", require("./src/routes/auth"));
+
 // 404 Handler
 app.all("*", (req, res, next) => {
   res.status(404).json({
