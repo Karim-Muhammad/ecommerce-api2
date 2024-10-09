@@ -41,11 +41,9 @@ ProductSchema.pre("findOneAndUpdate", function (next) {
 
 // ========================= MIDDLEWARES for POPULATE =========================
 // Middleware pre any method that starts with `find`
-ProductSchema.pre(/^find/g, function (next) {
-  this.populate({
-    path: "category",
-    select: "name -_id",
-  });
+ProductSchema.pre(/^find/, function (next) {
+  console.log("/Find/");
+  this.populate("category", "name");
 
   next();
 });

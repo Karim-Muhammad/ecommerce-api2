@@ -36,6 +36,8 @@ router
 // isCategoryIdExist is a middleware that checks if the category exists
 // but in ValidateRequest Rule we already do it as a step of validation.
 
+router.use("/:productId/reviews", require("./reviews"));
+
 router
   .route("/:id")
   .all(ensureIdMongoIdRule(Product), isIdMongoIdExistsRule(Product))

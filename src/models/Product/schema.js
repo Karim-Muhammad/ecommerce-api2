@@ -116,7 +116,12 @@ const Product = new Schema(
 
     // reviews: []
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    virtuals: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
 module.exports = Product;

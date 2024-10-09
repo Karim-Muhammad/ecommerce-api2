@@ -36,13 +36,23 @@ exports.getAll =
     });
   };
 
-exports.getOne = (Model) => async (req, res, next) => {
-  const document = await Model.findById(req.params.id);
+exports.getOne =
+  (Model, options = {}) =>
+  async (req, res, next) => {
+    let query = Model.findById(req.params.id);
 
-  return res.status(200).json({
-    data: document,
-  });
-};
+    if (options?.populateOptions?.length) {
+      options.populateOptions.forEach((option) => {
+        query = query.populate(option);
+      });
+    }
+
+    const document = await query;
+
+    return res.status(200).json({
+      data: document,
+    });
+  };
 
 exports.updateOne = (Model) => async (req, res, next) => {
   let document;

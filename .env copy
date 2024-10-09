@@ -1,0 +1,23 @@
+
+# Server
+BASE_URL=http://localhost:8000
+PORT=8000
+NODE_ENV=development
+
+# DATABASE
+ATLAS_USER=Karim
+ATLAS_PASSWORD=r6RdzFgCOhhfHiKU
+ATLAS_DBNAME=ecommerce-v1
+CONNECTION_STRING=mongodb+srv://Karim:r6RdzFgCOhhfHiKU@cluster0.tz5qkgy.mongodb.net/ecommerce-v1?retryWrites=true&w=majority&appName=Cluster0
+
+# JWT
+SECRET_KEY=2ba52e555145013ff49026f71a17693dcc33b3edcb094f507ccbf8dbca5336e815a0de29bc6a9987af0c91198993f0a147bcb9926a69ce1a68437acf5b6df2fc
+
+# EMAIL
+MAIL_HOST=smtp.gmail.com
+MAIL_SECURE=true
+MAIL_PORT=465
+
+# EMAIL CREDENTIALS
+MAIL_USER="kimoomar007@gmail.com"
+MAIL_PASSWORD="pugb hmza rbko pcub"

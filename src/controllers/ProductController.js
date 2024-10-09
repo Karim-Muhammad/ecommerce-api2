@@ -25,7 +25,14 @@ exports.getProducts = getAll(Product);
  * @param {*} res
  * @returns Product
  */
-exports.getProduct = getOne(Product);
+exports.getProduct = getOne(Product, {
+  populateOptions: [
+    {
+      path: "reviews",
+      select: "text rating -product",
+    },
+  ],
+});
 
 /**
  * @description Create a new product
