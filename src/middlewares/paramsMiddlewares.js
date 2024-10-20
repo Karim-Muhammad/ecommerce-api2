@@ -1,5 +1,5 @@
 const SubCategoryModel = require("../models/SubCategory");
-const ReviewModel = require("../models/Reviews/schema");
+const ReviewModel = require("../models/Reviews");
 const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
 

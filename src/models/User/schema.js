@@ -1,4 +1,4 @@
-const { Schema } = require("mongoose");
+const { Schema, default: mongoose } = require("mongoose");
 
 const UserSchema = new Schema({
   username: {
@@ -44,6 +44,23 @@ const UserSchema = new Schema({
     enum: ["user", "admin"],
     default: "user",
   },
+
+  wishlist: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    },
+  ],
+  address: [
+    {
+      id: mongoose.Schema.Types.ObjectId,
+      alias: String,
+      details: String,
+      city: String,
+      postalCode: String,
+      phone: String,
+    },
+  ],
 });
 
 module.exports = UserSchema;

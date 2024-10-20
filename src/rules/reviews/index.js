@@ -1,7 +1,7 @@
 const validate = require("express-validator");
 const Product = require("../../models/Product");
 const { doValidate } = require("../../validators");
-const Review = require("../../models/Reviews/schema");
+const Review = require("../../models/Reviews");
 
 exports.createReviewRule = [
   validate.body("text").optional().isString(),

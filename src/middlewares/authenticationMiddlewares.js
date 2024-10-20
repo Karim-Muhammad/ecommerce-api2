@@ -30,7 +30,7 @@ exports.guarding = function () {
       // 3) May admin remove this user which is currently loggin in
       // so even if token is valid and exist, user which belong may no longer exist!
       const user = await User.findById(payload.id);
-      console.log("[Verified Token]", payload, user);
+      // console.log("[Verified Token]", payload, user);
 
       if (!user) {
         return next(
@@ -44,7 +44,7 @@ exports.guarding = function () {
         10
       );
 
-      console.log("[Check]", passwordChangedAtInSec, payload.iat);
+      // console.log("[Check]", passwordChangedAtInSec, payload.iat);
 
       if (passwordChangedAtInSec > payload.iat) {
         return next(

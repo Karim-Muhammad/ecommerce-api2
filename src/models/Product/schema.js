@@ -118,7 +118,6 @@ const Product = new Schema(
   },
   {
     timestamps: true,
-    virtuals: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }

@@ -1,4 +1,5 @@
-const ReviewModel = require("../models/Reviews/schema");
+const ReviewModel = require("../models/Reviews");
+
 const {
   ensureIdMongoIdRule,
   isIdMongoIdExistsRule,
