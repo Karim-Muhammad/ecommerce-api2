@@ -13,11 +13,7 @@ const developmentErrorHandler = (err, _req, res, _next) => {
 };
 
 const productionErrorHandler = (err, _req, res, _next) => {
-  res.status(err?.statusCode || 500).json({
-    error: {
-      message: err.message,
-    },
-  });
+  res.status(err?.statusCode || 500).json({ message: err.message });
 };
 
 const globalErrorHandler = (err, req, res, next) => {

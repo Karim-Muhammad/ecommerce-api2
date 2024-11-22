@@ -3,7 +3,10 @@ const developmentErrorHandler = (err, _req, res, _next) => {
   console.log(err);
   res.status(err.statusCode || 500).json({
     error: {
-      ...err,
+      ...err.bag.reduce((acc, curr) => {
+        acc[curr.field] = curr.message;
+        return acc;
+      }, {}),
       // why below exists so!??
       stack: err.stack,
       message: err.message,

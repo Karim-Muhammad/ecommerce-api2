@@ -4,7 +4,7 @@ const ApiError = require("../utils/ApiError");
 exports.doValidate = (req, res, next) => {
   console.log("~~~~~~~~~~~~~~~~~~~~ doValidate ~~~~~~~~~~~~~~~~~~~~");
   const errors = validationResult(req).formatWith(({ msg, path }) => ({
-    field: path,
+    // field: path, in copy version needed
     message: msg,
     [path]: msg,
   }));

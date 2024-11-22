@@ -1,10 +1,15 @@
 function getMessages(error) {
   if (Array.isArray(error)) {
-    return error.reduce(
-      (res, err) =>
-        `${res + (err.message ?? err.msg ?? "an error occured!")}\n`,
-      ""
-    );
+    let count = error.length;
+
+    return error.reduce((res, err) => {
+      const separator = count > 1 ? ", " : "";
+      const message = err.message ?? err.msg ?? "an error occured!";
+
+      count -= 1;
+
+      return `${res + message.concat(separator)}`;
+    }, "");
   }
 
   return error.message || error.msg || "An error occurred!";
