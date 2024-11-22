@@ -11,3 +11,4 @@ exports.couponsRoute = require("./coupons");
 exports.cartRoute = require("./cart");
 exports.appSettingsRoute = require("./app-settings");
 exports.orderRoute = require("./order");
+exports.homeRoute = require("./home");
