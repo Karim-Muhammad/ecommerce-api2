@@ -1,50 +1,59 @@
-We can do more refactor
+# eCommerce API
 
-1. instead do rule for each route, we can do it based on logic
+A good start eCommerce REST API built with Node.js, Express. designed to handle core functionalities of an online store, including user authentication, product management, and order processing.
 
-getSingleCategoryRule
-getSingleProductRule
+## Features:
 
-->
+1. User Management
+   User registration and authentication (JWT-based).
+   Role-based authorization for admin and customer functionalities.
+   Profile management: update user details and password reset.
+2. Product Management
+   CRUD operations for products (create, read, update, delete).
+   Product search and filtering by categories and brands.
+   Support for multiple product images.
+3. Category and Brand Management
+   Creation and management of product categories.
+   Management of brand information.
+4. Cart and Orders
+   Add and remove items from the shopping cart.
+   Order creation and tracking.
+   Order history retrieval for users.
+5. Payment Integration
+   Basic integration with payment gateways (e.g., Stripe or PayPal).
+6. Admin Dashboard
+   Manage users, orders, products, categories, and brands.
+   <del>Access to analytics for tracking sales and inventory</del>.
+7. Reviews and Ratings
+   Users can rate and review products.
+   Admin moderation for reviews.
+8. Security
+   Data validation using Mongoose schemas.
+   Middleware for input sanitization and error handling.
+   <del>Protection against common security vulnerabilities (e.g., XSS, CSRF).</del>
+9. Pagination and Sorting
+   Efficient pagination for large datasets.
+   Sort results by date, rating, or price.
+10. API Documentation
+    Comprehensive API documentation using **Postman** or similar tools.
 
-getSingleRule
+### API
 
-<!--  -->
+**Documentation**: https://documenter.getpostman.com/view/23054100/2sAYBSmEBp
 
-learn how to create catchAsync function
-learn how to create AppError class
-learn how to create handlerFactory function
+**API link**: https://egroccery.onrender.com/api/v1
 
-see jonas code for reference (in github)
-[code](https://github.com/sdmisra/SchmedtmannNodeCourse/blob/main/4-natours/after-section-14/controllers/userController.js)
+### Deployed on
 
-[code](https://github.com/Boghdady/udemy-build-ecommerce-api-using-nodejs/blob/master/services/handlersFactory.js)
+API built with Nodejs + MongoDB as a Datbase (Mongoose).
+API deployed on Render.com
 
-<!--  -->
+### How to Start
 
-What is `nested routes`
-What is `populate` in mongoose
-What is `mergeParams` in express router
+```bash
+git clone <repo-url>
+cd <repo-name>
 
-<!--  -->
-
-There is a small problem in Error Handling in Middlewares and Express Validators
-it is returning 400 status code in message "Brand not found", "SubCategory not found"
-
-and that because throwing an error in the middleware will be caught by the error handler another middleware (doValidate)
-
-i will plan to fix that - insha'allah - in the next commit
-
-### with just Async Handling
-
-![alt text](image.png)
-
-if async error occurs, app will crash
-
-if you use AsyncHandler, it will catch the error and pass it to the error handler middleware
-
-if you use catchAsync, it will catch the error and pass it to the error handler middleware
-
----
-
-save images after validation (save file name in req.body but not saved in machine), another middleware after validation layer will save the image in the machine
+npm install # install all dependencies
+npm run start:dev # to start server on your local machine
+```
