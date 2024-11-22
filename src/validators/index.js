@@ -3,7 +3,11 @@ const ApiError = require("../utils/ApiError");
 
 exports.doValidate = (req, res, next) => {
   console.log("~~~~~~~~~~~~~~~~~~~~ doValidate ~~~~~~~~~~~~~~~~~~~~");
-  const errors = validationResult(req);
+  const errors = validationResult(req).formatWith(({ msg, param }) => ({
+    field: param,
+    message: msg,
+  }));
+
   console.log(req.body);
 
   if (!errors.isEmpty()) {
