@@ -15,6 +15,10 @@ const developmentErrorHandler = (err, _req, res, _next) => {
 const productionErrorHandler = (err, _req, res, _next) => {
   res.status(err?.statusCode || 500).json({
     error: {
+      ...err.bag.reduce((acc, curr) => {
+        acc[curr.field] = curr.message;
+        return acc;
+      }, {}),
       message: err.message,
     },
   });
