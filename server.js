@@ -15,6 +15,7 @@ const config = require("./config");
 const setupConnection = require("./src/utils/setup-connection-db");
 
 const ApiError = require("./src/utils/ApiError");
+const bootRoutes = require("./src/routes/apps");
 
 const globalErrorHandler = require("./src/middlewares/errorMiddleware");
 
@@ -34,16 +35,8 @@ app.use(express.urlencoded({ extended: true }));
 
 if (config.node_env === "development") app.use(morgan("dev"));
 
-// Mini Apps
-app.use("/api/v1/categories", require("./src/routes/category"));
-app.use("/api/v1/sub-categories", require("./src/routes/sub-category"));
-app.use("/api/v1/brands", require("./src/routes/brand"));
-app.use("/api/v1/products", require("./src/routes/product"));
-app.use("/api/v1/users", require("./src/routes/user"));
-app.use("/api/v1/auth", require("./src/routes/auth"));
-app.use("/api/v1/reviews", require("./src/routes/reviews"));
-app.use("/api/v1/wishlist", require("./src/routes/wishlist"));
-app.use("/api/v1/address", require("./src/routes/address"));
+// Bootstrap Mini Apps
+bootRoutes(app);
 
 // 404 Handler
 app.all("*", (req, res, next) => {

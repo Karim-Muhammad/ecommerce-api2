@@ -8,7 +8,7 @@ const ApiError = require("../utils/ApiError");
  */
 exports.guarding = function () {
   return async function (req, res, next) {
-    console.log(req.headers.authorization);
+    // console.log(req.headers.authorization);
 
     // 1) Check if token exist
     if (

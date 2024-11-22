@@ -1,0 +1,13 @@
+exports.productRoute = require("./product");
+exports.categoryRoute = require("./category");
+exports.subCategoryRoute = require("./sub-category");
+exports.brandRoute = require("./brand");
+exports.userRoute = require("./user");
+exports.authRoute = require("./auth");
+exports.reviewsRoute = require("./reviews");
+exports.wishlistRoute = require("./wishlist");
+exports.addressRoute = require("./address");
+exports.couponsRoute = require("./coupons");
+exports.cartRoute = require("./cart");
+exports.appSettingsRoute = require("./app-settings");
+exports.orderRoute = require("./order");
