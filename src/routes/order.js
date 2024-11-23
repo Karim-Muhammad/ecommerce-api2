@@ -4,6 +4,7 @@ const {
   getOrders,
   updateOrderDeliver,
   acceptOrderPay,
+  checkoutPaymentSession,
 } = require("../controllers/OrderController");
 
 const {
@@ -16,6 +17,7 @@ const router = Router();
 router.use(guarding());
 
 router.get("/", getOrders);
+router.post("/checkout-stripe", restrictTo("user"), checkoutPaymentSession);
 
 router.post("/cash", restrictTo("user"), createCashOrder);
 

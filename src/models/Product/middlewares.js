@@ -8,6 +8,9 @@ ProductSchema.post("init", (doc) => {
   if (!doc.imageCover) return;
 
   doc.imageCover = `${process.env.BASE_URL}/product/${doc.imageCover}`;
+  doc.images = doc.images.map(
+    (img) => `${process.env.BASE_URL}/product/${img}`
+  );
 });
 
 ProductSchema.post("save", (doc) => {

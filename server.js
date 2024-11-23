@@ -1,12 +1,14 @@
 // Deps
 const express = require("express");
 
+const cors = require("cors");
+
 const qs = require("qs");
 
 const morgan = require("morgan");
 
-require("dotenv").config();
 // load env variables `node v21.0.0` or higher by using loadEnv function in core node module
+require("dotenv").config();
 
 // Configuration file
 const config = require("./config");
@@ -23,6 +25,11 @@ setupConnection();
 
 // Express app
 const app = express();
+app.use(cors()); // Enable All CORS Requests (for all routes)
+app.options("*", cors()); // Enable Pre-Flight Request (for all routes)
+
+app.use(require("compression")());
+
 app.set("query parser", (str) => qs.parse(str));
 
 // Configurations

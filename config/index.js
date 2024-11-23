@@ -14,4 +14,7 @@ module.exports = {
   email_secure: process.env.MAIL_SECURE,
   email_user: process.env.MAIL_USER,
   email_pass: process.env.MAIL_PASSWORD,
+
+  // PAYMENT
+  stripe_secret_key: process.env.STRIPE_SECRET_KEY,
 };

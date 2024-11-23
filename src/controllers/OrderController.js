@@ -1,3 +1,6 @@
+// Payment Gateway
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 const CartModel = require("../models/Cart");
 const OrderModel = require("../models/Order");
 const ProductModel = require("../models/Product");
@@ -6,6 +9,7 @@ const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
 const factory = require("../utils/CRUDController");
 const { PaymentMethodType } = require("../helpers/constants");
+const config = require("../../config");
 
 /**
  * @desc    Create cash order
@@ -141,5 +145,47 @@ exports.updateOrderDeliver = catchAsync(async (req, res, next) => {
     success: true,
     message: "Order delivered successfully",
     order,
+  });
+});
+
+exports.checkoutPaymentSession = catchAsync(async (req, res, next) => {
+  const { shippingAddress } = req.body;
+
+  const cart = await CartModel.findOne({ user: req.user.id }).populate({
+    path: "cartItems.product",
+    select: "name price images",
+  });
+  if (!cart) {
+    return next(ApiError.notFound("Cart not found"));
+  }
+
+  console.log("Cartitem", cart.cartItems[0].product);
+  const { totalPriceAfterDiscount, totalPrice } = cart;
+
+  const paymentIntent = await stripe.checkout.sessions.create({
+    line_items: cart.cartItems.map((item) => ({
+      price_data: {
+        currency: "egp",
+        product_data: {
+          images: [`${config.base_url}/products/${item.product.images[0]}`],
+          name: item.product.name,
+        },
+        unit_amount: item.product.price * 100,
+      },
+      quantity: item.quantity,
+    })),
+
+    mode: "payment",
+    metadata: shippingAddress, // additional data the we can access later in the webhook (another endpoint in response)
+    customer_email: req.user.email,
+    client_reference_id: cart.id, // after this payment is successful, we can use this id to update the order
+    cancel_url: `${req.protocol}://${req.get("host")}/api/v1/cart`,
+    success_url: `${req.protocol}://${req.get("host")}/api/v1/orders`,
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: "Payment session created successfully",
+    paymentIntent,
   });
 });
