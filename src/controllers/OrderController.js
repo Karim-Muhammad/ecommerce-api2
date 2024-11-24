@@ -254,7 +254,7 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
   }
 
   if (event.type === "checkout.session.completed") {
-    createCardOrder(event.data.object); // event.data.object it is session data which you sent in previous step
+    await createCardOrder(event.data.object); // event.data.object it is session data which you sent in previous step
   }
 
   res.status(200).json({ received: true });
