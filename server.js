@@ -16,10 +16,10 @@ const config = require("./config");
 // Set up Database
 const setupConnection = require("./src/utils/setup-connection-db");
 
-const ApiError = require("./src/utils/ApiError");
 const bootRoutes = require("./src/routes/apps");
 
 const globalErrorHandler = require("./src/middlewares/errorMiddleware");
+const { webhookCheckout } = require("./src/controllers/OrderController");
 
 setupConnection();
 
@@ -44,6 +44,12 @@ if (config.node_env === "development") app.use(morgan("dev"));
 
 // Bootstrap Mini Apps
 bootRoutes(app);
+
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  webhookCheckout
+);
 
 // 0) Global Error Handler (Express)
 app.use(globalErrorHandler);
