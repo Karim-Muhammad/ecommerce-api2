@@ -4,8 +4,8 @@ const CartModel = require("../Cart");
 const { OrderStatus } = require("../../helpers/constants");
 
 // either save or update
-OrderSchema.post(/save|update/gi, async function (doc) {
-  console.log("Order saved", this, "doc:", doc);
+OrderSchema.post(/save|update/gi, async (doc) => {
+  console.log("Order saved");
 
   const { orderItems } = doc;
 
