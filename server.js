@@ -41,6 +41,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 if (config.node_env === "development") app.use(morgan("dev"));
+else app.use(morgan("combined"));
 
 // Bootstrap Mini Apps
 bootRoutes(app);

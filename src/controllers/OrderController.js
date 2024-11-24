@@ -3,7 +3,6 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const CartModel = require("../models/Cart");
 const OrderModel = require("../models/Order");
-const ProductModel = require("../models/Product");
 
 const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
@@ -111,6 +110,11 @@ exports.rejectOrderPay = catchAsync(async (req, res, next) => {
   });
 });
 
+/**
+ * @description Update order status
+ * @route      PATCH /api/v1/orders/:orderId/status
+ * @access     Private (Admin)
+ */
 exports.updateOrderStatus = catchAsync(async (req, res, next) => {
   const { status } = req.body;
   const { orderId } = req.params;
@@ -165,6 +169,7 @@ exports.updateOrderDeliver = catchAsync(async (req, res, next) => {
  * @access      Private (User)
  */
 exports.checkoutPaymentSession = catchAsync(async (req, res, next) => {
+  console.log("Checkout Payment Session");
   const { shippingAddress } = req.body;
 
   const cart = await CartModel.findOne({ user: req.user.id }).populate({
@@ -207,6 +212,7 @@ exports.checkoutPaymentSession = catchAsync(async (req, res, next) => {
 
 //
 async function createCardOrder(sessionData) {
+  console.log("Start Create Card Order");
   // 1. Find Cart Data
   const cartId = sessionData.client_reference_id;
   const cart = await CartModel.findById(cartId);
@@ -237,6 +243,7 @@ async function createCardOrder(sessionData) {
  * @access      Public
  */
 exports.webhookCheckout = catchAsync(async (req, res, next) => {
+  console.log("========== Webhook Checkout =============");
   const sessionData = req.body;
   const signature = req.headers["stripe-signature"];
   let event;
@@ -254,6 +261,7 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
   }
 
   if (event.type === "checkout.session.completed") {
+    console.log("Checkout Session Completed");
     await createCardOrder(event.data.object); // event.data.object it is session data which you sent in previous step
   }
 
