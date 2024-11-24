@@ -256,7 +256,7 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
     event = stripe.webhooks.constructEvent(
       sessionData,
       signature,
-      config.stripe_secret_key
+      config.stripe_endpoint_secret
     );
   } catch (error) {
     console.log("Webhook Error", error.message);
