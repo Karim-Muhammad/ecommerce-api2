@@ -36,6 +36,13 @@ app.set("query parser", (str) => qs.parse(str));
 // app.use("json spaces", 2);
 app.use(express.static(`${__dirname}/storage`));
 
+// Webhook
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  webhookCheckout
+);
+
 // Parse Body of JSON request
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -45,12 +52,6 @@ else app.use(morgan("combined"));
 
 // Bootstrap Mini Apps
 bootRoutes(app);
-
-app.post(
-  "/webhook-checkout",
-  express.raw({ type: "application/json" }),
-  webhookCheckout
-);
 
 // 0) Global Error Handler (Express)
 app.use(globalErrorHandler);
