@@ -190,7 +190,7 @@ exports.checkoutPaymentSession = catchAsync(async (req, res, next) => {
 
     mode: "payment",
     metadata: {
-      shippingAddress,
+      ...shippingAddress,
     }, // additional data the we can access later in the webhook (another endpoint in response)
     customer_email: req.user.email,
     client_reference_id: cart.id, // after this payment is successful, we can use this id to update the order
