@@ -248,9 +248,9 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
   const signature = req.headers["stripe-signature"];
   let event;
 
-  console.log("Request Body", sessionData);
-  console.log("Request Signature", signature);
-  console.log("Stripe Secret Key", config.stripe_endpoint_secret);
+  // console.log("Request Body", sessionData);
+  // console.log("Request Signature", signature);
+  // console.log("Stripe Secret Key", config.stripe_endpoint_secret);
 
   try {
     event = stripe.webhooks.constructEvent(
