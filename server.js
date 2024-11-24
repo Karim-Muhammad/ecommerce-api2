@@ -35,14 +35,6 @@ app.set("query parser", (str) => qs.parse(str));
 // Configurations
 // app.use("json spaces", 2);
 app.use(express.static(`${__dirname}/storage`));
-
-// Webhook
-app.post(
-  "/webhook-checkout",
-  express.raw({ type: "application/json" }),
-  webhookCheckout
-);
-
 // Parse Body of JSON request
 app.use((req, res, next) => {
   if (req.originalUrl === "/webhook-checkout") {
@@ -51,7 +43,13 @@ app.use((req, res, next) => {
     express.json()(req, res, next);
   }
 });
-app.use(express.urlencoded({ extended: true }));
+
+// Webhook
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  webhookCheckout
+);
 
 if (config.node_env === "development") app.use(morgan("dev"));
 else app.use(morgan("combined"));
