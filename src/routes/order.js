@@ -5,6 +5,7 @@ const {
   updateOrderDeliver,
   acceptOrderPay,
   checkoutPaymentSession,
+  updateOrderStatus,
 } = require("../controllers/OrderController");
 
 const {
@@ -23,5 +24,6 @@ router.post("/cash", restrictTo("user"), createCashOrder);
 
 router.patch("/:orderId/pay", restrictTo("admin"), acceptOrderPay);
 router.patch("/:orderId/deliver", restrictTo("admin"), updateOrderDeliver);
+router.patch("/:orderId/status", restrictTo("admin"), updateOrderStatus);
 
 module.exports = router;

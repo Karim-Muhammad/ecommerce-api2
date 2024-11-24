@@ -17,4 +17,5 @@ module.exports = {
 
   // PAYMENT
   stripe_secret_key: process.env.STRIPE_SECRET_KEY,
+  stripe_endpoint_secret: process.env.STRIPE_ENDPOINT_SECRET,
 };

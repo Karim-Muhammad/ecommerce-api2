@@ -57,6 +57,21 @@ const OrderSchema = new Schema(
     },
 
     deliveredAt: Date,
+
+    status: {
+      type: String,
+      enum: [
+        "pending",
+        "accepted",
+        "rejected",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "refund",
+      ],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );

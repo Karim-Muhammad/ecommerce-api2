@@ -45,14 +45,6 @@ if (config.node_env === "development") app.use(morgan("dev"));
 // Bootstrap Mini Apps
 bootRoutes(app);
 
-// 404 Handler
-app.all("*", (req, res, next) => {
-  res.status(404).json({
-    error: ApiError.notFound("Page Not Found!"),
-  });
-  // next(ApiError.notFound("Page Not Found!"));
-});
-
 // 0) Global Error Handler (Express)
 app.use(globalErrorHandler);
 
