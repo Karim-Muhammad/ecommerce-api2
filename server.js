@@ -44,7 +44,13 @@ app.post(
 );
 
 // Parse Body of JSON request
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.originalUrl === "/webhook-checkout") {
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
 app.use(express.urlencoded({ extended: true }));
 
 if (config.node_env === "development") app.use(morgan("dev"));
