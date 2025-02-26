@@ -7,6 +7,8 @@ const config = require("../../config");
  * @returns Promise
  */
 const sendEmail = async (options) => {
+  console.log("sendEmail -> options", options);
+
   //   1) Create a transporter (service that send the email like gmail, sendgrid, etc)
   const transporter = nodemailer.createTransport({
     host: config.email_host,
@@ -18,6 +20,8 @@ const sendEmail = async (options) => {
     },
   });
 
+  console.log("Transporter -> options", options);
+
   //   2) Define the email optiosn (like subject, body, etc)
   const mailOptions = {
     from: "E-Shop <kimoomar007@gmail>",
@@ -27,6 +31,7 @@ const sendEmail = async (options) => {
   };
 
   //   3) Actually send the email
+  console.log("Now sending the email");
   await transporter.sendMail(mailOptions);
 };
 
