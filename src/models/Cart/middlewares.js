@@ -20,9 +20,9 @@ async function calcTotalPriceOfCartModel(model, id) {
     },
     {
       $lookup: {
-        from: "products",
         localField: "cartItems.product",
         foreignField: "_id",
+        from: "products",
         as: "product",
       },
     },

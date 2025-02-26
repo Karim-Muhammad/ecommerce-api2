@@ -3,6 +3,8 @@ const express = require("express");
 
 const cors = require("cors");
 
+const rateLimiter = require("express-rate-limit");
+
 const qs = require("qs");
 
 const morgan = require("morgan");
@@ -25,11 +27,23 @@ setupConnection();
 
 // Express app
 const app = express();
-app.use(cors()); // Enable All CORS Requests (for all routes)
-app.options("*", cors()); // Enable Pre-Flight Request (for all routes)
 
+// 2# Security HTTP Headers - Rate Limiting
+const limiter = rateLimiter({
+  max: 100,
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  message: "Too many requests from this IP, please try again in 10 minutes!",
+});
+app.use("/api/", limiter);
+// Enable All CORS Requests (for all routes)
+app.use(cors());
+// Enable Pre-Flight Request (for all routes)
+app.options("*", cors());
+
+// Compress all responses (for all routes)
 app.use(require("compression")());
 
+// Query Parser
 app.set("query parser", (str) => qs.parse(str));
 
 // Configurations
@@ -40,9 +54,16 @@ app.use((req, res, next) => {
   if (req.originalUrl === "/webhook-checkout") {
     next();
   } else {
-    express.json()(req, res, next);
+    express.json({ limit: "20kb" })(req, res, next); // Body limit is 20kb 1# security
   }
 });
+
+// Security 4# HTTP Parameter Pollution
+// express by default if you send the same query parameter/field in body twice or more, express put them all in an array
+// so your app may wasn't expecting that, as well as it may be a security issue
+// so we can use hpp to prevent this - hpp will use the last query/field if it is duplicated
+app.use(require("hpp")()); // should bd used after body parser
+// Video : https://www.indexacademy.dev/courses/1957671/lectures/44400024
 
 // Webhook
 app.post(
